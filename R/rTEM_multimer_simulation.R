@@ -241,7 +241,9 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
 }
 
 
-#' Multimer Simulation development version
+
+
+#' Multimer Simulation
 #' @param guest_pattern point pattern of class \emph{ppp} or \emph{pp3}.  The final multtimer
 #' pattern will match this pattern in class, intensity, and domain.  If this is left as NULL, then
 #' the domain will match that of \emph{upp}, will be of the class specified in \emph{output},
@@ -324,14 +326,14 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
 #' \item{} {This will be the same as Case 1, except in Step 10 create a 3D point pattern (class `pp3`)
 #' instead of a 2D point pattern}
 #' @export
-multimersim_dev = function(guest_pattern = NULL, upp, output = "guest pattern type", n_guests = NA,
-                           min_thick = NA, max_thick = NA, ztrim = 0,
-                           size_fracs = c(0, 1),
-                           num_neighbors = 6,
-                           sample_method = "rank", exponent = 1,
-                           weights = c(1, 1, 1),
-                           probs = c(1, 0, 0, 0),
-                           intensity_upp = NA) {
+multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type", n_guests = NA,
+                       min_thick = NA, max_thick = NA, ztrim = 0,
+                       size_fracs = c(0, 1),
+                       num_neighbors = 6,
+                       sample_method = "rank", exponent = 1,
+                       weights = c(1, 1, 1),
+                       probs = c(1, 0, 0, 0),
+                       intensity_upp = NA) {
 
   ## check input parameters
   if(is.null(guest_pattern)) {

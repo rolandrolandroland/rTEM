@@ -15,40 +15,8 @@ Gest_nn(
 )
 }
 \arguments{
-\item{X}{The observed point pattern, 
-    from which an estimate of \eqn{G(r)} will be computed.
-    An object of class \code{ppp}, or data
-    in any format acceptable to \code{\link{as.ppp}()}.
-  }
-
-\item{r}{Optional. Numeric vector. The values of the argument \eqn{r}
-    at which \eqn{G(r)} should be evaluated. There is a sensible default.
-    First-time users are strongly advised not to specify this argument.
-    See below for important conditions on \eqn{r}.
-  }
-
-\item{breaks}{
-    This argument is for internal use only.
-  }
-
 \item{k}{Integer, or integer vector. The algorithm will compute the distance to the kth nearest neighbour.
 See \link[spatstat.geom]{nndist}}
-
-\item{...}{Ignored.}
-
-\item{correction}{
-    Optional.
-    The edge correction(s) to be used to estimate \eqn{G(r)}.
-    A vector of character strings selected from
-    \code{"none"}, \code{"rs"}, \code{"km"}, \code{"Hanisch"}
-    and \code{"best"}.
-    Alternatively \code{correction="all"} selects all options.
-  }
-
-\item{domain}{
-    Optional. Calculations will be restricted to this subset
-    of the window. See Details.
-  }
 }
 \description{
 Estimates the nearest neighbour distance distribution
