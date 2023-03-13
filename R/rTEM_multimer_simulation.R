@@ -390,7 +390,7 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
     # case 1 UPP pattern is 3d
     if (spatstat.geom::is.pp3(upp)) {
       print("Case 1: Multimers will be generated in 3D UPP and then collapsed into 2D")
-      box_3d = domain(upp)
+      box_3d = domain(upp_scaled)
 
       if (is.na(max_thick)) {
         max_thick = max(upp$domain$zrange)
@@ -559,7 +559,7 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
   else if (spatstat.geom::is.pp3(guest_pattern) || output == "pp3") {
     print("Case 3:  Multimers will be generated in 3D for 3D output")
     if (is.null(guest_pattern)) {
-      box_3d = domain(upp)
+      box_3d = domain(upp_scaled)
     }
 
     else {
