@@ -24,7 +24,7 @@ multimersim_v01 = function(exp_ppp,  thickness, group_size = 2,
   #vol = box_area * thickness
   # intensity_exp = npoints / vol
   # rescale RCP pattern to match physical system (1 point per nm)
-  rcp_scaled = rescaler(rcp_pattern, intensity_rcp)
+  rcp_scaled = rTEM::rescale_pattern(rcp_pattern, intensity_rcp)
 
   # subset so that it is now only includes the points in the xy range of the TEM points and z range of thickness
   rcp_box = subset(rcp_scaled, x > box_2d$xrange[1] & x < box_2d$xrange[2] &
@@ -264,7 +264,7 @@ func_rcp_simple_v01 = function(exp_ppp, thickness, rcp_pattern, neighbor_number 
   #vol = box_area * thickness
   # intensity_exp = npoints / vol
   # rescale RCP pattern to match physical system (1 point per nm)
-  rcp_scaled = rescaler(rcp_pattern, intensity_rcp)
+  rcp_scaled = rTEM::rescale_pattern(rcp_pattern, intensity_rcp)
 
   # subset so that it is now only includes the points in the xy range of the TEM points and z range of thickness
   rcp_box = subset(rcp_scaled, x > box_2d$xrange[1] & x < box_2d$xrange[2] &
@@ -386,7 +386,6 @@ rcp_simple_relab_v01 = function(exp_ppp, num_relabs, thickness, neighbor_number 
 #'}
 #'
 #' @export
-
 multimersim_v02 = function(guest_pattern = NULL, upp, output = "guest pattern type", n_guests = NA,
                            min_thick = NA, max_thick = NA, ztrim = 0,
                            group_size = 2, num_neighbors = 6, sample_method = "rank",
@@ -421,7 +420,7 @@ multimersim_v02 = function(guest_pattern = NULL, upp, output = "guest pattern ty
   }
 
   # rescale UPP pattern to match physical system (1 point per nm)
-  upp_scaled = rTEM::rescaler(upp, intensity_upp)
+  upp_scaled = rTEM::rescale_pattern(upp, intensity_upp)
 
   # case 1 and 2:  guest_pattern is 2d
   if (spatstat.geom::is.ppp(guest_pattern) || output == "ppp") {
@@ -1153,7 +1152,7 @@ multimersim_v03 = function(guest_pattern = NULL, upp, output = "guest pattern ty
   }
 
   # rescale UPP pattern to match physical system (1 point per nm)
-  upp_scaled = rTEM::rescaler(upp, intensity_upp)
+  upp_scaled = rTEM::rescale_pattern(upp, intensity_upp)
 
   # case 1 and 2:  guest_pattern is 2d
   if (spatstat.geom::is.ppp(guest_pattern) || output == "ppp") {

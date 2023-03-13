@@ -97,8 +97,8 @@ Algorithm steps: Case 1: 2D Guest pattern, 3D UPP
  will remain
  (for dimers, this is number of guests / 2)
  and assign this many points in the scaled subsetted UPP to be guests.
-  These are the "centroids"}
-  \item{Step 4:} {Determine the number of groups of each size.  The number of points in groups of
+ These are the "centroids"}
+\item{Step 4:} {Determine the number of groups of each size.  The number of points in groups of
   each size is simply the input variable `size_fracs`.  So We can divide this by the number of points
   in such a group size (1 for monomers, 2 for dimers, 3 for trimers, etc), and multiply by the
   total number of guest points}
@@ -113,11 +113,12 @@ Algorithm steps: Case 1: 2D Guest pattern, 3D UPP
   of the top (+z) or bottom (-z)}
   \item{Step 10:} {Create a 2D point pattern (class `ppp`) by ignoring the z coordinates
   of each point.  Label guest type points "G" and host type points "H"}}
-Case 2: 2D Guest pattern, 2D UPP
+ Case 2: 2D Guest pattern, 2D UPP
 \itemize{
-\item{} {Same as steps for Case 1, except ignore Step 2, Step 3, and Step 9.}
+  \item{Same as} { steps for Case 1, except ignore Step 2, Step 3, and Step 9.}
 }
 Case 3: 3D Guest pattern, 3D UPP
-\item{} {This will be the same as Case 1, except in Step 10 create a 3D point pattern (class `pp3`)
+\itemize{\item{This } {will be the same as Case 1, except in Step 10 create a 3D point pattern (class `pp3`)
 instead of a 2D point pattern}
+}
 }

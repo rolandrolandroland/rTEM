@@ -323,8 +323,10 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
 #' \item{} {Same as steps for Case 1, except ignore Step 2, Step 3, and Step 9.}
 #' }
 #' Case 3: 3D Guest pattern, 3D UPP
+#' \itemize{
 #' \item{} {This will be the same as Case 1, except in Step 10 create a 3D point pattern (class `pp3`)
 #' instead of a 2D point pattern}
+#' }
 #' @export
 multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type", n_guests = NA,
                        min_thick = NA, max_thick = NA, ztrim = 0,
@@ -364,7 +366,7 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
 
 
   # rescale UPP pattern to match physical system (1 point per nm)
-  upp_scaled = rTEM::rescaler(upp, intensity_upp)
+  upp_scaled = rTEM::rescale_pattern(upp, intensity_upp)
 
   # case 1 and 2:  guest_pattern is 2d
   if (spatstat.geom::is.ppp(guest_pattern) || output == "ppp") {

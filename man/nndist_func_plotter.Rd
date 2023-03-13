@@ -23,7 +23,7 @@ nndist_func_plotter(
 \arguments{
 \item{image}{Point pattern for analysis (ppp or pp3)}
 
-\item{image2}{If a point pattern is given for image2, then \code{\link[spatstat]{nncross}} will be used}
+\item{image2}{If a point pattern is given for image2, then \code{\link[spatstat.geom]{nncross}} will be used}
 
 \item{nn_vec}{vector of nearest neighbors to calculate distance to}
 
@@ -50,9 +50,9 @@ if FALSE, probability densities, component density, are plotted (so that the his
 Describe output
 }
 \description{
-Plot and Save Histograms of nearest neighbor distances (\code{\link[spatstat]{nndist}})
+Plot and Save Histograms of nearest neighbor distances (\code{\link[spatstat.geom]{nndist}})
 }
 \details{
-Takes a point pattern as input (or two if using multitype \code{\link[spatstat]{nncross}}) and returns the histograms of all nearest neighbors
+Takes a point pattern as input (or two if using multitype \code{\link[spatstat.geom]{nncross}}) and returns the histograms of all nearest neighbors
 in the nn_vec argument.  If `output` is set to "save", then it will also save the image.
 }

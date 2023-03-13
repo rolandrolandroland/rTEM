@@ -1,10 +1,10 @@
 #' Advanced Nearest Neighbour Distance Function G
 #' @description Estimates the nearest neighbour distance distribution
 #'  Gest from a point pattern in a window of arbitrary shape. Modified from the \emph{spatstat} package
-#' function \link[spatstat.core]{Gest}  to allow for usage of nearest neighbors beyond the first
+#' function \link[spatstat.explore]{Gest}  to allow for usage of nearest neighbors beyond the first
 #' @param k Integer, or integer vector. The algorithm will compute the distance to the kth nearest neighbour.
 #' See \link[spatstat.geom]{nndist}
-#' @inheritParams spatstat.core::Gest
+#' @inheritParams spatstat.explore::Gest
 #' @md
 #' @export
 "Gest_nn" <-

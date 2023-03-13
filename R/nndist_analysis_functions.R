@@ -1,6 +1,6 @@
 #' nndist plotter and saver
 #' @param image Point pattern for analysis (ppp or pp3)
-#' @param image2 If a point pattern is given for image2, then \code{\link[spatstat]{nncross}} will be used
+#' @param image2 If a point pattern is given for image2, then \code{\link[spatstat.geom]{nncross}} will be used
 #' @param nn_vec vector of nearest neighbors to calculate distance to
 #' @param location location to save image(s) if `output` = `save`
 #' @param image_name Name to save image as.  The nearest neighbor number + `nn.png` will be added to it
@@ -15,10 +15,10 @@
 #' @param image_height Height of image to be saved
 #'
 #' @description
-#' Plot and Save Histograms of nearest neighbor distances (\code{\link[spatstat]{nndist}})
+#' Plot and Save Histograms of nearest neighbor distances (\code{\link[spatstat.geom]{nndist}})
 #'
 #' @details
-#' Takes a point pattern as input (or two if using multitype \code{\link[spatstat]{nncross}}) and returns the histograms of all nearest neighbors
+#' Takes a point pattern as input (or two if using multitype \code{\link[spatstat.geom]{nncross}}) and returns the histograms of all nearest neighbors
 #' in the nn_vec argument.  If `output` is set to "save", then it will also save the image.
 #'
 #'
@@ -80,8 +80,8 @@ nndist_func_plotter = function(image, image2 = NULL, nn_vec = 1:5, location = ge
 #' Plot and Save Histograms of nndist function
 #'
 #'  @param image Image of type ppp or pp3 to calculate distances from
-#'  @param image2 will be NULL (default) if using \code{\link[spatstat]{nndist}} function on `image`.  Otherwise, set as same class as `image` (ppp or pp3) to
-#'  calculate distances to using (\code{\link[spatstat]{nncross}})
+#'  @param image2 will be NULL (default) if using \code{\link[spatstat.geom]{nndist}} function on `image`.  Otherwise, set as same class as `image` (ppp or pp3) to
+#'  calculate distances to using (\code{\link[spatstat.geom]{nncross}})
 #'  @param value determines the output.  If = "percent", then rows are NN number, columns are distance, and value is percent.  If = "distance",
 #'  rows are NN number, columns are percent, and `value` is distance
 #'  @param rads_vec vector of distances to calculate percents at. Only used if `value` = "percent"

@@ -31,8 +31,8 @@ at which each percentage in `perc_vec` has each NN in `nn_vec` if `value` = "dis
 }
 \details{
 @param image Image of type ppp or pp3 to calculate distances from
- @param image2 will be NULL (default) if using \code{\link[spatstat]{nndist}} function on `image`.  Otherwise, set as same class as `image` (ppp or pp3) to
- calculate distances to using (\code{\link[spatstat]{nncross}})
+ @param image2 will be NULL (default) if using \code{\link[spatstat.geom]{nndist}} function on `image`.  Otherwise, set as same class as `image` (ppp or pp3) to
+ calculate distances to using (\code{\link[spatstat.geom]{nncross}})
  @param value determines the output.  If = "percent", then rows are NN number, columns are distance, and value is percent.  If = "distance",
  rows are NN number, columns are percent, and `value` is distance
  @param rads_vec vector of distances to calculate percents at. Only used if `value` = "percent"

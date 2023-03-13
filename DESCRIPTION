@@ -1,12 +1,17 @@
 Package: rTEM
 Type: Package
-Title: What the Package Does (Title Case)
+Title: R package for statistical analysis of TEM data
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: 
+    person("Roland", "Bennett", , "rolandbennett@mines.edu", role = c("aut", "cre"))
+Description: R package for statistical analysis of transmission electron microscopy (TEM) data.  This package's primary function is to simulate either 2D (ppp) or 3D (pp3) point patterns to compare to TEM data.  There is also streamlined functionality for comparing summary functions of simulated and observed data.  
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.2
+Imports: 
+    dplyr (>= 1.0.10),
+    kableExtra (>= 1.3.4),
+    spatstat (>= 3.0.3),
+    spatstat.geom (>= 3.0.6),
+    spatstat.utils (>= 3.0.1)
