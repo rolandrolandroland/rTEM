@@ -474,7 +474,7 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
                                      y = c(all_guest$data$y, new_host$data$y), z = c(all_guest$data$z, new_host$data$z),
                                      marks = c(all_guest$data$marks, new_host$data$marks))#, window = box_3d)
         chosen = multimer_coords[multimer_coords$z > min_thick+ztrim & multimer_coords$z  < max_thick - ztrim,]
-        multimer_box = ppp(x = chosen$z, y = chosen$y, marks = as.factor(chosen$marks), window = box_2d)
+        multimer_box = ppp(x = chosen$x, y = chosen$y, marks = as.factor(chosen$marks), window = box_2d)
       }
 
     }
@@ -651,7 +651,7 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
       chosen = multimer_coords[multimer_coords$z > min_thick + ztrim & multimer_coords$z  < max_thick - ztrim,]
       box_3d_trimmed = box_3d
       box_3d_trimmed$zrange = c(min_thick + ztrim, max_thick - ztrim)
-      multimer_box = pp3(x = chosen$z, y = chosen$y, chosen$z, marks = as.factor(chosen$marks), window = box_3d_trimmed)
+      multimer_box = pp3(x = chosen$x, y = chosen$y, z =chosen$z, marks = as.factor(chosen$marks), window = box_3d_trimmed)
 
     }
 
