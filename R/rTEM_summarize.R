@@ -109,6 +109,99 @@ calc_T_vals <- function(relabelings, func = "K", rmin = 0, rmax, K_cor = "border
     })
   }
   return(T)
+
+  if (func == "F") {
+    if (F_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$km
+      })
+    } else if (F_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$rs
+      })
+    } else if (F_cor == "cs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$cs
+      })
+    } else {
+      print("Incorrect F edge correction")
+    }
+    r <- relabelings[[1]]$rrl_F$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- x - med
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+  }
+  return(T)
+
+  if (func == "GXGH") {
+    if (GXGH_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$km
+      })
+    } else if (GXGH_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$rs
+      })
+    } else if (GXGH_cor == "han") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$han
+      })
+    } else if (GXGH_cor == "none") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$raw
+      })
+    } else {
+      print("Incorrect GXGH edge correction")
+    }
+    r <- relabelings[[1]]$rrl_GXGH$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- x - med
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+  }
+  return(T)
+
+
+  if (func == "GXHG") {
+    if (GXHG_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$km
+      })
+    } else if (GXHG_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$rs
+      })
+    } else if (GXHG_cor == "han") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$han
+      })
+    } else if (GXHG_cor == "none") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$raw
+      })
+    } else {
+      print("Incorrect GXHG edge correction")
+    }
+    r <- relabelings[[1]]$rrl_GXHG$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- x - med
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+  }
+  return(T)
 }
 
 

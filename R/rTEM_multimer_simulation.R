@@ -24,7 +24,8 @@ get_ranks = function(distance, weights) {
 #'   as a guest is \emph{probs[x] * exp(-exponent * distances[ranks]))}
 #' @param exponent a numeric. If \emph{sample_method = "exp"}, then
 #' this is the value of \emph{exponent} in \emph{exp(-exponent * distances[ranks])}
-#' #' @param group_size a numeric. How large will the groups be.  Pick `group_size -1` neighbors
+#' @param group_size a numeric. How large will the groups be.  Pick `group_size -1` neighbors
+#' @export
 pick_neighbor = function(ranks, probs, distances = NA,
                          sample_method = "rank", exponent = 1,
                          group_size = 2) {
@@ -75,6 +76,7 @@ pick_neighbor = function(ranks, probs, distances = NA,
 #' \item{Step 4:} {Deal with duplicates.  If `upp_guest` contains points that are close enough to each
 #' other, it is possible they will share nearest neighbors.  If any point is selected twice, then
 #' another shall be selected to maintain the proper number of guests}}
+#' @export
 create_groups = function(num_neighbors = 6, upp_guest, upp_host,
                          probs = c(1, 0, 0, 0, 0, 0), weights = c(1, 1, 1),
                          sample_method = "rank", group_size = 2, exponent = 1) {
