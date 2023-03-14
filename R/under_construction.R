@@ -4,7 +4,7 @@
 #' @description For an input distances \eqn{d_1, d_2, d_3} and weights \eqn{w_1, w_2, w_3},
 #'  returns weighted distance \eqn{\sqrt{w_1 d_1^2 + w_2 d_2^2 + w_3 d_3^2}}
 #'  @export
-get_ranks = function(distance, weights) {
+get_ranks_dev = function(distance, weights) {
   weighted_dist = apply(distance, 1, function(i) {
     sqrt(sum(i^2 * weights))
   })
@@ -25,7 +25,7 @@ get_ranks = function(distance, weights) {
 #' @param exponent a numeric. If \emph{sample_method = "exp"}, then
 #' this is the value of \emph{exponent} in \emph{exp(-exponent * distances[ranks])}
 #' #' @param group_size a numeric. How large will the groups be.  Pick `group_size -1` neighbors
-pick_neighbor = function(ranks, probs, distances = NA,
+pick_neighbor_dev = function(ranks, probs, distances = NA,
                          sample_method = "rank", exponent = 1,
                          group_size = 2) {
   if (sample_method == "rank") {
@@ -75,7 +75,7 @@ pick_neighbor = function(ranks, probs, distances = NA,
 #' \item{Step 4:} {Deal with duplicates.  If `upp_guest` contains points that are close enough to each
 #' other, it is possible they will share nearest neighbors.  If any point is selected twice, then
 #' another shall be selected to maintain the proper number of guests}}
-create_groups = function(num_neighbors = 6, upp_guest, upp_host,
+create_groups_dev = function(num_neighbors = 6, upp_guest, upp_host,
                          probs = c(1, 0, 0, 0, 0, 0), weights = c(1, 1, 1),
                          sample_method = "rank", group_size = 2, exponent = 1) {
 
