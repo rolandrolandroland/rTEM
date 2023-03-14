@@ -440,6 +440,16 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
       if (sum(size_fracs) == size_fracs[1]) {
         chosen = upp_guest$data[upp_guest$data$z > min_thick +ztrim & upp_guest$data$z  < max_thick - ztrim,]
         multimer_box = ppp(x = chosen$x, y = chosen$y, window = box_2d)
+
+        marks(upp_guest) = "G"
+        marks(upp_host) = "H"
+
+
+        multimer_coords = data.frame(x = c(upp_guest$data$x, upp_host$data$x),
+                                     y = c(upp_guest$data$y, upp_host$data$y), z = c(upp_guest$data$z, upp_host$data$z),
+                                     marks = c(upp_guest$data$marks, upp_host$data$marks))#, window = box_3d)
+        chosen = multimer_coords[multimer_coords$z > min_thick+ztrim & multimer_coords$z  < max_thick - ztrim,]
+        multimer_box = ppp(x = chosen$x, y = chosen$y, marks = as.factor(chosen$marks), window = box_2d)
       }
 
       else {
@@ -515,7 +525,10 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
       # extract host points
       upp_host = subset(upp_labeled, marks == "C")
       if (sum(size_fracs) == size_fracs[1]) {
-        multimer_box = ppp(x = upp_guest$data$x, y = upp_guest$data$y, window = box_2d)
+        marks(upp_guest) = "G"
+        marks(upp_host) = "H"
+        multimer_box = ppp(x = c(upp_guest$x, upp_host$x), y = c(upp_guest$y, upp_host$y),
+                           marks = c(upp_guest$marks, upp_host$marks), window = box_2d)
 
       }
 
@@ -592,6 +605,8 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
       abs(box_3d$yrange[2] - box_3d$yrange[1]) *
       (max_thick - min_thick- (ztrim *2))
 
+    box_3d_trimmed = box_3d
+    box_3d_trimmed$zrange = c(min_thick + ztrim, max_thick - ztrim)
 
     # npoints will be scaled by volume ratios
     ## label n/2 points as guest and the rest as host
@@ -614,8 +629,13 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
     # extract host points
     upp_host = subset(upp_labeled, marks == "C")
     if (sum(size_fracs) == size_fracs[1]) {
-      chosen = upp_guest$data[upp_guest$data$z > min_thick + ztrim & upp_guest$data$z  < max_thick - ztrim,]
-      multimer_box = ppp(x = chosen$x, y =chosen$y, window = box_2d)
+      marks(upp_guest) = "G"
+      marks(upp_host) = "H"
+      multimer_coords = data.frame(x = c(upp_guest$data$x, upp_host$data$x), y = c(upp_guest$data$y, upp_host$data$y),
+                                   z = c(upp_guest$data$z, upp_host$data$z),
+                                   marks = c(upp_guest$data$marks, upp_host$data$marks))
+      chosen = multimer_coords[multimer_coords$z > min_thick + ztrim & multimer_coords$z  < max_thick - ztrim,]
+      multimer_box = pp3(x = chosen$x, y = chosen$y, z =chosen$z, marks = as.factor(chosen$marks), window = box_3d_trimmed)
 
     }
 
@@ -649,8 +669,6 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
       multimer_coords = data.frame(x = c(all_guest$data$x, new_host$data$x), y = c(all_guest$data$y, new_host$data$y), z = c(all_guest$data$z, new_host$data$z),
                                    marks = c(all_guest$data$marks, new_host$data$marks))
       chosen = multimer_coords[multimer_coords$z > min_thick + ztrim & multimer_coords$z  < max_thick - ztrim,]
-      box_3d_trimmed = box_3d
-      box_3d_trimmed$zrange = c(min_thick + ztrim, max_thick - ztrim)
       multimer_box = pp3(x = chosen$x, y = chosen$y, z =chosen$z, marks = as.factor(chosen$marks), window = box_3d_trimmed)
 
     }

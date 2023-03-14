@@ -136,6 +136,12 @@ average_relabelings <- function(relabelings, envelope.value = .95,
   # transform envelope value to high index (0.95 envelope will be 0.025 and 0.975)
   envelope.value <- envelope.value + (1 - envelope.value) / 2
 
+  # get index of high and low envelope values and find values at each index
+  hi.ind <- round((length(relabelings) + 1) * envelope.value, 0)
+  lo.ind <- round((length(relabelings) + 1) * (1 - envelope.value), 0)
+  if (lo.ind == 0) {
+    lo.ind <- 1
+  }
   # make the relabelings their own individual objects
 
   # K
@@ -160,12 +166,6 @@ average_relabelings <- function(relabelings, envelope.value = .95,
     # order K(r) values by value
     ordered <- apply(mmean, 1, sort)
 
-    # get index of high and low envelope values and find values at each index
-    hi.ind <- round((length(relabelings) + 1) * envelope.value, 0)
-    lo.ind <- round((length(relabelings) + 1) * (1 - envelope.value), 0)
-    if (lo.ind == 0) {
-      lo.ind <- 1
-    }
     lo <- ordered[lo.ind, ]
     hi <- ordered[hi.ind, ]
 

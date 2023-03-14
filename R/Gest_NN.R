@@ -9,7 +9,7 @@
 #' @export
 "Gest_nn" <-
   "nearest.neighbour" <-
-  function(X, r=NULL, breaks=NULL, k=1, ..., correction=c("rs", "km", "han"),
+  function(X, r=NULL, breaks=NULL, k = 1, ..., correction=c("rs", "km", "han"),
            domain=NULL) {
     verifyclass(X, "ppp")
     if(!is.null(domain))
@@ -17,12 +17,12 @@
 
     ##
     W <- X$window
-    npts <- npoints(X)
+    npts <- spatstat.geom::npoints(X)
     lambda <- npts/spatstat.geom::area(W)
 
     ## determine r values
-    rmaxdefault <- rmax.rule("G", W, lambda)
-    breaks <- handle.r.b.args(r, breaks, W, rmaxdefault=rmaxdefault)
+    rmaxdefault <- spatstat.explore::rmax.rule("G", W, lambda)
+    breaks <- spatstat.geom::handle.r.b.args(r, breaks, W, rmaxdefault=rmaxdefault)
     rvals <- breaks$r
     rmax  <- breaks$max
     zeroes <- numeric(length(rvals))
@@ -31,7 +31,7 @@
     #  correction.given <- !missing(correction) && !is.null(correction)
     if(is.null(correction)) {
       correction <- c("rs", "km", "han")
-    } else correction <- pickoption("correction", correction,
+    } else correction <- spatstat.geom::pickoption("correction", correction,
                                     c(none="none",
                                       border="rs",
                                       rs="rs",
@@ -46,7 +46,7 @@
                                     multi=TRUE)
 
     ##  compute nearest neighbour distances
-    nnd <- nndist(X$x, X$y, k=k)
+    nnd <- nndist(X$x, X$y, k = k)
     ##  distance to boundary
     bdry <- bdist.points(X)
     ## restrict to subset ?
@@ -86,7 +86,7 @@
         ##  uncensored distances
         x <- nnd[d]
         ##  weights
-        a <- spatstat.geom::eroded.areas(W, rvals, subset=domain)
+        a <- eroded.areas(W, rvals, subset=domain)
         ## calculate Hanisch estimator
         h <- hist(x[x <= rmax], breaks=breaks$val, plot=FALSE)$counts
         G <- cumsum(h/a)
@@ -125,7 +125,7 @@
                      "theoretical Poisson hazard function h(r)")[wanted],
                    if(want.km) "km" else "rs")
       ## modify recommended plot range
-      attr(Z, "alim") <- with(Z, range(.x[.y <= 0.9]))
+      attr(Z, "alim") <- with(Z, range(Z$r[Z$km <= 0.9]))
     }
     nama <- names(Z)
     fvnames(Z, ".") <- rev(setdiff(nama, c("r", "hazard", "theohaz")))
