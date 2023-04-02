@@ -135,7 +135,7 @@ nn_dist_perc_table = function(pattern, pattern2 = NULL,
     # if saving, then make prettier using kable then save
     else if (output == "save") {
       print("Save")
-      out %>% kable(caption = "Percent with all NN within Distance") %>%
+      out %>% kableExtra::kable(caption = "Percent with all NN within Distance") %>%
         kable_styling(latex_options = c("striped")) %>%
         save_kable(paste(location, "/", pattern_name, "_NN_dist_perc.png", sep = ""))
       return(out)
@@ -158,7 +158,7 @@ nn_dist_perc_table = function(pattern, pattern2 = NULL,
     }
     else if (output == "save") {
       print("Save")
-      out %>% kable(caption = "Distance at Which X% of points have Y NN's") %>%
+      out %>% kableExtra::kable(caption = "Distance at Which X% of points have Y NN's") %>%
         kable_styling(latex_options = c("striped")) %>%
         save_kable(paste(location, "/", pattern_name, "_NN_perc_dist.png", sep = ""))
       return(out)
@@ -254,7 +254,7 @@ percent_neighbors = function(pattern, i,
   # save the plot
   else if (output == "save") {
     print("Save")
-    out %>% t()%>% kable(caption = name) %>%
+    out %>% t()%>% kableExtra::kable(caption = name) %>%
       kable_styling(latex_options = c("striped")) %>%
       save_kable(paste(location, "/", image_name, "_NN_type_perc.png", sep = ""))
     return(out)
@@ -302,10 +302,10 @@ data_frame_list_averager = function(data, output = "plot",
   }
   else if (output == "save") {
     print("yaa")
-    out[[1]] %>% kable(caption = "Mean Percent with all NN within Distance") %>%
+    out[[1]] %>% kableExtra::kable(caption = "Mean Percent with all NN within Distance") %>%
       kable_styling(latex_options = c("striped")) %>%
       save_kable(paste(location, "/", image_name, "_mean_perc_table.png", sep = ""))
-    out[[2]] %>% kable(caption = "Standard Deviation of Percent with all NN within Distance") %>%
+    out[[2]] %>% kableExtra::kable(caption = "Standard Deviation of Percent with all NN within Distance") %>%
       kable_styling(latex_options = c("striped")) %>%
       save_kable(paste(location, "/", image_name, "_sd_perc_table.png", sep = ""))
     return(out)

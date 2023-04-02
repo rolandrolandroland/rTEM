@@ -11,7 +11,9 @@ LazyData: true
 RoxygenNote: 7.2.2
 Imports: 
     dplyr (>= 1.0.10),
+    ggplot2,
     kableExtra (>= 1.3.4),
     spatstat (>= 3.0.3),
+    spatstat.explore,
     spatstat.geom (>= 3.0.6),
     spatstat.utils (>= 3.0.1)

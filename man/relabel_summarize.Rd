@@ -37,6 +37,20 @@ relabel_summarize(
 
 \item{host_formula}{marks of points to not use in summary functions (except cross type functions)}
 
+\item{maxKr}{a numeric}
+
+\item{nKr}{a numeric}
+
+\item{maxGr}{a numeric}
+
+\item{nGr}{a numeric}
+
+\item{maxGXGHr}{a numeric}
+
+\item{maxGXHGr}{a numeric}
+
+\item{nGXr}{a numeric}
+
 \item{K_cor}{edge correction(s) to be used for K function}
 
 \item{G_cor}{edge correction(s) to be used for G function}
@@ -46,8 +60,6 @@ relabel_summarize(
 \item{GXGH_cor}{edge correction(s) to be used for GXGH function}
 
 \item{GXHG_cor}{edge correction(s) to be used for GXHG function}
-
-\item{...}{maxKr, nKr, maxGr, nGr, maxGXGHr, maxGXHGr, nGXr}
 }
 \value{
 summary functions listed in `funcs` variable
