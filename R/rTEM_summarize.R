@@ -654,7 +654,7 @@ plot_summary <- function(func = "K",
                          axis.text.y.size = 40, linewidth = 0.5,  env_linewidth = 0.5,
                          linetype = "solid",
                          env_linetype = "dashed") {
-  if (is.na(fill.colors)) {
+  if (all(is.na(fill.colors))) {
     fill.colors = pattern.colors
   }
   cor = paste(func, "_cor", sep = "")
