@@ -128,7 +128,7 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
   which_neighbor = cbind(1:(length(which_neighbor)/(group_size-1)), which_neighbor)
 
   # get the coordinates of the semi randomly selected neighbor
-  ind= t(sapply(1:nrow(which_neighbor), function(i) {
+  ind= (sapply(1:nrow(which_neighbor), function(i) {
     sapply(2:(group_size), function(j) {
       nn_ind[[which_neighbor[i,j]]][i,2]
     })
@@ -137,7 +137,7 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
   #duplicate = apply(ind, 2, duplicated)
   #duplicate = duplicated(c(ind))
   duplicate = duplicated(ind, MARGIN = 0)
-  duplicate_ind = which(duplicate, arr.ind = TRUE)[,1]
+  duplicate_ind = which(duplicate)# arr.ind = TRUE)[,1]
   duplicate_ind = unique(duplicate_ind)
   not_duplicate = ind[!duplicate]
   ## points that are not duplicates
@@ -241,9 +241,6 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
 
   return(chosen_points)
 }
-
-
-
 
 #' Multimer Simulation
 #' @param guest_pattern point pattern of class \emph{ppp} or \emph{pp3}.  The final multtimer
@@ -374,12 +371,12 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
   if (spatstat.geom::is.ppp(guest_pattern) || output == "ppp") {
 
     if (is.null(guest_pattern) && spatstat.geom::is.pp3(upp)) {
-      box_2d = as.owin(c(upp$domain$xrange,
-                         upp$domain$yrange))
+      box_2d = as.owin(c(upp_scaled$domain$xrange,
+                         upp_scaled$domain$yrange))
 
     }
     else if (is.null(guest_pattern) && spatstat.geom::is.ppp(upp)) {
-      box_2d = upp$window
+      box_2d = upp_scaled$window
     }
 
     else {
@@ -395,10 +392,10 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
       box_3d = domain(upp_scaled)
 
       if (is.na(max_thick)) {
-        max_thick = max(upp$domain$zrange)
+        max_thick = max(upp_scaled$domain$zrange)
       }
       if (is.na(min_thick)) {
-        min_thick = min(upp$domain$zrange)
+        min_thick = min(upp_scaled$domain$zrange)
       }
 
 
@@ -429,7 +426,9 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
       size_dist = round(n_guest *size_fracs / group_sizes, 0)   # this is the number of groups that are each size
 
       # A points will be dimers, trimers, etc, B points are isolated
-      upp_labeled = rlabel(upp_box, labels = c(rep("A",n_groups - size_dist[1]), rep("B",size_dist[1]), rep("C", n_total - n_groups)), permute = TRUE)
+      upp_labeled = rlabel(upp_box, labels = c(rep("A",n_groups - size_dist[1]),
+                                               rep("B",size_dist[1]),
+                                               rep("C", n_total - n_groups)), permute = TRUE)
 
       # extract guest points
       #upp_background = subset(upp_labeled, marks == "B")

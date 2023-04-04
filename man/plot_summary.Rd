@@ -20,6 +20,7 @@ plot_summary(
   F_cor = "km",
   GXGH_cor = "km",
   GXHG_cor = "km",
+  G2_cor = "km",
   alpha = 0.5,
   legend.key.size = 20,
   legend.text.size = 20,

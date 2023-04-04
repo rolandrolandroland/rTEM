@@ -23,7 +23,8 @@ relabel_summarize(
   G_cor = "km",
   F_cor = "km",
   GXGH_cor = "km",
-  GXHG_cor = "km"
+  GXHG_cor = "km",
+  G2_cor = "km"
 )
 }
 \arguments{

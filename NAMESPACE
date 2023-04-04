@@ -2,7 +2,8 @@
 
 export(Gest_nn)
 export(average_relabelings)
-export(calc_T_vals)
+export(average_relabelings_v01)
+export(calc_T_vals_v01)
 export(calc_summary_funcs)
 export(create_groups)
 export(data_frame_list_averager)

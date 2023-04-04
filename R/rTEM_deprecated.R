@@ -1,3 +1,356 @@
+#' Calculate T value
+#'
+#' @param relabelings object from \code{\link[rTEM]{relabel_summarize}}
+#' @param func Which function is used: currently on G and K are supported
+#' @param rmin what value to start the calculation from
+#' @param rmax max value to run calculation to
+#' @param K_cor boundary correction type for K
+#' @param G_cor boundary correction type for G
+#'
+#' @description
+#' Takes input of relabeling object and calculates the T value for either K or G function
+#'
+#' @details This uses the method from \emph{Baddeley et al.} to calculate the T value for an envelope for either
+#' K  (\emph{K3est}) G \emph{G3est} function
+#' @references
+#' Baddeley, A., Diggle, P. J., Hardegen, A., Lawrence, T_, Milne, R. K., & Nair, G. (2014).
+#' On tests of spatial pattern based on simulation envelopes. Ecological Monographs, 84(3), 477–489. https://doi.org/10.1890/13-2042.1
+#' @export
+calc_T_vals_v01 <- function(relabelings, func = "K", rmin = 0, rmax, K_cor = "border", G_cor = "km") {
+  if (func == "K") {
+    if (K_cor == "trans") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_K$trans
+      })
+    } else if (K_cor == "iso") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_K$iso
+      })
+    } else if (K_cor == "border") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_K$bord
+      })
+    } else {
+      print("Incorrect K edge correction")
+    }
+
+    r <- relabelings[[1]]$rrl_K$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- sqrt(x) - sqrt(med)
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+    return(T)
+  }
+  if (func == "G") {
+    if (G_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_G$km
+      })
+    } else if (G_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_G$rs
+      })
+    } else {
+      print("Incorrect G edge correction")
+    }
+    r <- relabelings[[1]]$rrl_G$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- x - med
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+  }
+  return(T)
+
+  if (func == "F") {
+    if (F_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$km
+      })
+    } else if (F_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$rs
+      })
+    } else if (F_cor == "cs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$cs
+      })
+    } else {
+      print("Incorrect F edge correction")
+    }
+    r <- relabelings[[1]]$rrl_F$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- x - med
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+  }
+  return(T)
+
+  if (func == "GXGH") {
+    if (GXGH_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$km
+      })
+    } else if (GXGH_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$rs
+      })
+    } else if (GXGH_cor == "han") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$han
+      })
+    } else if (GXGH_cor == "none") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$raw
+      })
+    } else {
+      print("Incorrect GXGH edge correction")
+    }
+    r <- relabelings[[1]]$rrl_GXGH$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- x - med
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+  }
+  return(T)
+
+
+  if (func == "GXHG") {
+    if (GXHG_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$km
+      })
+    } else if (GXHG_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$rs
+      })
+    } else if (GXHG_cor == "han") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$han
+      })
+    } else if (GXHG_cor == "none") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$raw
+      })
+    } else {
+      print("Incorrect GXHG edge correction")
+    }
+    r <- relabelings[[1]]$rrl_GXHG$r
+    med <- apply(mmean, 1, median)
+    ind <- which(r <= rmax & r >= rmin)
+    interval <- rmax / (length(r) - 1)
+    T <- apply(mmean, 2, function(x) {
+      T_1 <- x - med
+      T_1 <- T_1[ind]
+      sum(T_1^2) * interval
+    })
+  }
+  return(T)
+}
+
+
+
+#' Average relabelings
+#' @param relabelings output of  \code{\link[rTEM]{relabel_summarize}} function
+#' @param envelope.value size of envelope to compute.  Should be decimal (e.g. 0.95 = 95\%)
+#' @param funcs vector of summary functions to calculate
+#' @param K_cor edge correction(s) to be used for K function
+#' @param G_cor edge correction(s) to be used for G function
+#' @param F_cor edge correction(s) to be used for F function
+#' @param GXGH_cor edge correction(s) to be used for GXGH function
+#' @param GXHG_cor edge correction(s) to be used for GXHG function
+#'
+#' @description
+#' Function take all relabelings and return averages and envelope values
+#'
+#' @details Take output of  \code{\link[rTEM]{relabel_summarize}} and create envelopes
+#'
+#' @return data frame with x value (distance), average y value, and y value envelopess
+#' @export
+average_relabelings_v01 <- function(relabelings, envelope.value = .95,
+                                funcs = c("K", "G"),
+                                K_cor = "trans", G_cor = "km", F_cor = "km",
+                                GXGH_cor = "km", GXHG_cor = "km") {
+  # transform envelope value to high index (0.95 envelope will be 0.025 and 0.975)
+  envelope.value <- envelope.value + (1 - envelope.value) / 2
+
+  # get index of high and low envelope values and find values at each index
+  hi.ind <- round((length(relabelings) + 1) * envelope.value, 0)
+  lo.ind <- round((length(relabelings) + 1) * (1 - envelope.value), 0)
+  if (lo.ind == 0) {
+    lo.ind <- 1
+  }
+  # make the relabelings their own individual objects
+
+  # K
+  # extract K(r) values
+  if ("K" %in% funcs) {
+    if (K_cor == "trans") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_K$trans
+      })
+    } else if (K_cor == "iso") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_K$iso
+      })
+    } else if (K_cor == "border") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_K$bord
+      })
+    } else {
+      print("Incorrect K edge correction")
+    }
+
+    # order K(r) values by value
+    ordered <- apply(mmean, 1, sort)
+
+    lo <- ordered[lo.ind, ]
+    hi <- ordered[hi.ind, ]
+
+    # get r values
+    r <- relabelings[[1]]$rrl_K$r
+
+    # find the median at every distance
+    med <- apply(mmean, 1, median)
+    rrl_K <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
+  }
+
+  # Repeat for G, GX, and F
+  # G
+  if ("G" %in% funcs) {
+    if (G_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_G$km
+      })
+    } else if (G_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_G$rs
+      })
+    } else {
+      print("Incorrect G edge correction")
+    }
+
+    r <- relabelings[[1]]$rrl_G$r
+    ordered <- apply(mmean, 1, sort)
+    lo <- ordered[lo.ind, ]
+    hi <- ordered[hi.ind, ]
+    med <- apply(mmean, 1, median)
+    rrl_G <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
+  }
+
+  # F
+  if ("F" %in% funcs) {
+    if (F_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$km
+      })
+    } else if (F_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$rs
+      })
+    } else if (F_cor == "cs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_F$cs
+      })
+    } else {
+      print("Incorrect F edge correction")
+    }
+    r <- relabelings[[1]]$rrl_F$r
+    ordered <- apply(mmean, 1, sort)
+    lo <- ordered[lo.ind, ]
+    hi <- ordered[hi.ind, ]
+    med <- apply(mmean, 1, median)
+    rrl_F <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
+  }
+
+  # GXGH
+  if ("GXGH" %in% funcs) {
+    if (GXGH_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$km
+      })
+    } else if (GXGH_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$rs
+      })
+    } else if (GXGH_cor == "han") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$han
+      })
+    } else if (GXGH_cor == "none") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXGH$raw
+      })
+    } else {
+      print("Incorrect GXGH edge correction")
+    }
+
+    r <- relabelings[[1]]$rrl_GXGH$r
+    ordered <- apply(mmean, 1, sort)
+    lo <- ordered[lo.ind, ]
+    hi <- ordered[hi.ind, ]
+    med <- apply(mmean, 1, median)
+    rrl_GXGH <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
+  }
+
+  # GXGH
+  if ("GXHG" %in% funcs) {
+    if (GXHG_cor == "km") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$km
+      })
+    } else if (GXHG_cor == "rs") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$rs
+      })
+    } else if (GXHG_cor == "han") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$han
+      })
+    } else if (GXHG_cor == "none") {
+      mmean <- sapply(relabelings, function(x) {
+        x$rrl_GXHG$raw
+      })
+    } else {
+      print("Incorrect GXHG edge correction")
+    }
+
+    r <- relabelings[[1]]$rrl_GXHG$r
+    ordered <- apply(mmean, 1, sort)
+    lo <- ordered[lo.ind, ]
+    hi <- ordered[hi.ind, ]
+    med <- apply(mmean, 1, median)
+    rrl_GXHG <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
+  }
+  all_funcs <- c("K", "G", "F", "GXGH", "GXHG")
+  all_funcs %in% funcs
+  relabs <- c("rrl_K", "rrl_G", "rrl_F", "rrl_GXGH", "rrl_GXHG")
+  out <- lapply(relabs[all_funcs %in% funcs], get, envir = environment())
+  names(out) <- relabs[all_funcs %in% funcs]
+  return(out)
+}
+
+
+
+
+
+
+
 ## these file are deprecated:: I am keeping copies of them, but they are not to be used any more
 #'
 #'

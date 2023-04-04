@@ -1,7 +1,7 @@
 #' rescale_pattern Function
 #'
 #' @description
-#' Rescales an input 3D point pattern
+#' Rescales an input 3D point patterns
 #'
 #' @details
 #' Takes an input 3D point pattern (pp3 object) and scales it to have intensity of new.intensity by multiplying
@@ -39,171 +39,6 @@ rescale_pattern <- function(pattern, new_intensity) {
   return(out)
 }
 
-#' Calculate T value
-#'
-#' @param relabelings object from \code{\link[rTEM]{relabel_summarize}}
-#' @param func Which function is used: currently on G and K are supported
-#' @param rmin what value to start the calculation from
-#' @param rmax max value to run calculation to
-#' @param K_cor boundary correction type for K
-#' @param G_cor boundary correction type for G
-#'
-#' @description
-#' Takes input of relabeling object and calculates the T value for either K or G function
-#'
-#' @details This uses the method from \emph{Baddeley et al.} to calculate the T value for an envelope for either
-#' K  (\emph{K3est}) G \emph{G3est} function
-#' @references
-#' Baddeley, A., Diggle, P. J., Hardegen, A., Lawrence, T_, Milne, R. K., & Nair, G. (2014).
-#' On tests of spatial pattern based on simulation envelopes. Ecological Monographs, 84(3), 477–489. https://doi.org/10.1890/13-2042.1
-#' @export
-calc_T_vals <- function(relabelings, func = "K", rmin = 0, rmax, K_cor = "border", G_cor = "km") {
-  if (func == "K") {
-    if (K_cor == "trans") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_K$trans
-      })
-    } else if (K_cor == "iso") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_K$iso
-      })
-    } else if (K_cor == "border") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_K$bord
-      })
-    } else {
-      print("Incorrect K edge correction")
-    }
-
-    r <- relabelings[[1]]$rrl_K$r
-    med <- apply(mmean, 1, median)
-    ind <- which(r <= rmax & r >= rmin)
-    interval <- rmax / (length(r) - 1)
-    T <- apply(mmean, 2, function(x) {
-      T_1 <- sqrt(x) - sqrt(med)
-      T_1 <- T_1[ind]
-      sum(T_1^2) * interval
-    })
-    return(T)
-  }
-  if (func == "G") {
-    if (G_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_G$km
-      })
-    } else if (G_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_G$rs
-      })
-    } else {
-      print("Incorrect G edge correction")
-    }
-    r <- relabelings[[1]]$rrl_G$r
-    med <- apply(mmean, 1, median)
-    ind <- which(r <= rmax & r >= rmin)
-    interval <- rmax / (length(r) - 1)
-    T <- apply(mmean, 2, function(x) {
-      T_1 <- x - med
-      T_1 <- T_1[ind]
-      sum(T_1^2) * interval
-    })
-  }
-  return(T)
-
-  if (func == "F") {
-    if (F_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_F$km
-      })
-    } else if (F_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_F$rs
-      })
-    } else if (F_cor == "cs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_F$cs
-      })
-    } else {
-      print("Incorrect F edge correction")
-    }
-    r <- relabelings[[1]]$rrl_F$r
-    med <- apply(mmean, 1, median)
-    ind <- which(r <= rmax & r >= rmin)
-    interval <- rmax / (length(r) - 1)
-    T <- apply(mmean, 2, function(x) {
-      T_1 <- x - med
-      T_1 <- T_1[ind]
-      sum(T_1^2) * interval
-    })
-  }
-  return(T)
-
-  if (func == "GXGH") {
-    if (GXGH_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$km
-      })
-    } else if (GXGH_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$rs
-      })
-    } else if (GXGH_cor == "han") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$han
-      })
-    } else if (GXGH_cor == "none") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$raw
-      })
-    } else {
-      print("Incorrect GXGH edge correction")
-    }
-    r <- relabelings[[1]]$rrl_GXGH$r
-    med <- apply(mmean, 1, median)
-    ind <- which(r <= rmax & r >= rmin)
-    interval <- rmax / (length(r) - 1)
-    T <- apply(mmean, 2, function(x) {
-      T_1 <- x - med
-      T_1 <- T_1[ind]
-      sum(T_1^2) * interval
-    })
-  }
-  return(T)
-
-
-  if (func == "GXHG") {
-    if (GXHG_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$km
-      })
-    } else if (GXHG_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$rs
-      })
-    } else if (GXHG_cor == "han") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$han
-      })
-    } else if (GXHG_cor == "none") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$raw
-      })
-    } else {
-      print("Incorrect GXHG edge correction")
-    }
-    r <- relabelings[[1]]$rrl_GXHG$r
-    med <- apply(mmean, 1, median)
-    ind <- which(r <= rmax & r >= rmin)
-    interval <- rmax / (length(r) - 1)
-    T <- apply(mmean, 2, function(x) {
-      T_1 <- x - med
-      T_1 <- T_1[ind]
-      sum(T_1^2) * interval
-    })
-  }
-  return(T)
-}
-
 
 #' Average relabelings
 #' @param relabelings output of  \code{\link[rTEM]{relabel_summarize}} function
@@ -225,9 +60,16 @@ calc_T_vals <- function(relabelings, func = "K", rmin = 0, rmax, K_cor = "border
 average_relabelings <- function(relabelings, envelope.value = .95,
                                 funcs = c("K", "G"),
                                 K_cor = "trans", G_cor = "km", F_cor = "km",
-                                GXGH_cor = "km", GXHG_cor = "km") {
+                                GXGH_cor = "km", GXHG_cor = "km", G2_cor = "km") {
   # transform envelope value to high index (0.95 envelope will be 0.025 and 0.975)
   envelope.value <- envelope.value + (1 - envelope.value) / 2
+
+  for (i in 2:10) {
+    nm =paste("G", i, sep = "")
+    if (any(funcs == nm)) {
+      assign(paste("G", i, "_cor", sep=""), G2_cor)
+    }
+  }
 
   # get index of high and low envelope values and find values at each index
   hi.ind <- round((length(relabelings) + 1) * envelope.value, 0)
@@ -237,151 +79,32 @@ average_relabelings <- function(relabelings, envelope.value = .95,
   }
   # make the relabelings their own individual objects
 
-  # K
-  # extract K(r) values
-  if ("K" %in% funcs) {
-    if (K_cor == "trans") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_K$trans
-      })
-    } else if (K_cor == "iso") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_K$iso
-      })
-    } else if (K_cor == "border") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_K$bord
-      })
-    } else {
-      print("Incorrect K edge correction")
-    }
+  out = lapply(funcs, function(func) {
+    cor = paste(func, "_cor", sep = "")
+    cor = get(cor)
 
-    # order K(r) values by value
+    rrl = paste("rrl_", func, sep = "")
+
+
+    mmean <- sapply(relabelings, function(x) {
+      x[[rrl]][[cor]]
+    })
+
     ordered <- apply(mmean, 1, sort)
 
     lo <- ordered[lo.ind, ]
     hi <- ordered[hi.ind, ]
 
     # get r values
-    r <- relabelings[[1]]$rrl_K$r
-
+    r <- relabelings[[1]][[rrl]]$r
     # find the median at every distance
     med <- apply(mmean, 1, median)
-    rrl_K <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
-  }
-
-  # Repeat for G, GX, and F
-  # G
-  if ("G" %in% funcs) {
-    if (G_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_G$km
-      })
-    } else if (G_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_G$rs
-      })
-    } else {
-      print("Incorrect G edge correction")
-    }
-
-    r <- relabelings[[1]]$rrl_G$r
-    ordered <- apply(mmean, 1, sort)
-    lo <- ordered[lo.ind, ]
-    hi <- ordered[hi.ind, ]
-    med <- apply(mmean, 1, median)
-    rrl_G <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
-  }
-
-  # F
-  if ("F" %in% funcs) {
-    if (F_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_F$km
-      })
-    } else if (F_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_F$rs
-      })
-    } else if (F_cor == "cs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_F$cs
-      })
-    } else {
-      print("Incorrect F edge correction")
-    }
-    r <- relabelings[[1]]$rrl_F$r
-    ordered <- apply(mmean, 1, sort)
-    lo <- ordered[lo.ind, ]
-    hi <- ordered[hi.ind, ]
-    med <- apply(mmean, 1, median)
-    rrl_F <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
-  }
-
-  # GXGH
-  if ("GXGH" %in% funcs) {
-    if (GXGH_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$km
-      })
-    } else if (GXGH_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$rs
-      })
-    } else if (GXGH_cor == "han") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$han
-      })
-    } else if (GXGH_cor == "none") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXGH$raw
-      })
-    } else {
-      print("Incorrect GXGH edge correction")
-    }
-
-    r <- relabelings[[1]]$rrl_GXGH$r
-    ordered <- apply(mmean, 1, sort)
-    lo <- ordered[lo.ind, ]
-    hi <- ordered[hi.ind, ]
-    med <- apply(mmean, 1, median)
-    rrl_GXGH <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
-  }
-
-  # GXGH
-  if ("GXHG" %in% funcs) {
-    if (GXHG_cor == "km") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$km
-      })
-    } else if (GXHG_cor == "rs") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$rs
-      })
-    } else if (GXHG_cor == "han") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$han
-      })
-    } else if (GXHG_cor == "none") {
-      mmean <- sapply(relabelings, function(x) {
-        x$rrl_GXHG$raw
-      })
-    } else {
-      print("Incorrect GXHG edge correction")
-    }
-
-    r <- relabelings[[1]]$rrl_GXHG$r
-    ordered <- apply(mmean, 1, sort)
-    lo <- ordered[lo.ind, ]
-    hi <- ordered[hi.ind, ]
-    med <- apply(mmean, 1, median)
-    rrl_GXHG <- data.frame(r = r, mmean = med, lo = lo, hi = hi)
-  }
-  all_funcs <- c("K", "G", "F", "GXGH", "GXHG")
-  all_funcs %in% funcs
-  relabs <- c("rrl_K", "rrl_G", "rrl_F", "rrl_GXGH", "rrl_GXHG")
-  out <- lapply(relabs[all_funcs %in% funcs], get, envir = environment())
-  names(out) <- relabs[all_funcs %in% funcs]
+    return(data.frame(r = r, mmean = med, lo = lo, hi = hi))
+  })
+  # K
+  names(out) = sapply(1:length(funcs), function(func) {
+    paste("rrl_", funcs[func], sep = "")
+  })
   return(out)
 }
 
@@ -421,7 +144,8 @@ relabel_summarize <- function(seed, pattern, funcs = c("K", "G", "F", "GXGH"),
                               maxKr = 10, nKr = 200, maxGr = 5, nGr = 1000,
                               maxGXGHr = 3, maxGXHGr = 8, nGXr = 1000, vside = 0.3,
                               K_cor = "trans", G_cor = "km", F_cor = "km",
-                              GXGH_cor = "km", GXHG_cor = "km") {
+                              GXGH_cor = "km", GXHG_cor = "km",
+                              G2_cor = "km") {
   # set seed to make sure each random relabeling is different
   set.seed(seed)
 
@@ -452,6 +176,15 @@ relabel_summarize <- function(seed, pattern, funcs = c("K", "G", "F", "GXGH"),
     if ("G" %in% funcs) {
       rrl_G <- G3est(dopant_relabeled, rmax = maxGr, nrval = nGr, correction = G_cor)
     }
+
+    for (i in 2:10) {
+      if (paste("G", i, sep = "") %in% funcs) {
+        G_i = G3est_nn(dopant_relabeled,  rmax = maxGr, nrval = nGr,
+                       k = i, correction = G2_cor)
+        assign(paste("rrl_G", i, sep=""), G_i)
+      }
+    }
+
     if ("F" %in% funcs) {
       rrl_F <- F3est(dopant_relabeled, rmax = maxGr, nrval = nGr, correction = F_cor, vside = vside)
     }
@@ -472,7 +205,14 @@ relabel_summarize <- function(seed, pattern, funcs = c("K", "G", "F", "GXGH"),
       rrl_K <- Kest(dopant_relabeled, r = seq(0, maxKr, length.out = nKr), correction = K_cor)
     }
     if ("G" %in% funcs) {
-      rrl_G <- Gest_nn(dopant_relabeled, r = seq(0, maxGr, length.out = nGr), correction = G_cor, k = k)
+      rrl_G <- Gest_nn(dopant_relabeled, r = seq(0, maxGr, length.out = nGr), correction = G_cor, k = 1)
+
+    }
+    for (i in 2:10) {
+      if (paste("G", i, sep = "") %in% funcs) {
+        G_i = Gest_nn(dopant_relabeled, r = seq(0, maxGr, length.out = nGr), correction = G2_cor, k = i)
+        assign(paste("rrl_G", i, sep=""), G_i)
+      }
     }
     if ("F" %in% funcs) {
       rrl_F <- Fest(dopant_relabeled, r = seq(0, maxGr, length.out = nGr), correction = F_cor)
@@ -493,8 +233,16 @@ relabel_summarize <- function(seed, pattern, funcs = c("K", "G", "F", "GXGH"),
 
 
   all_funcs <- c("K", "G", "F", "GXGH", "GXHG")
-  all_funcs %in% funcs
+
+  G_nn = rep(NA, 9)
+  for (i in 2:10) {
+    G_nn[i-1] = paste("G", i, sep = "")
+  }
+  all_funcs = c(all_funcs, G_nn)
+
+  #all_funcs %in% funcs
   relabs <- c("rrl_K", "rrl_G", "rrl_F", "rrl_GXGH", "rrl_GXHG")
+  relabs = c(relabs, G_nn)
   out <- lapply(relabs[all_funcs %in% funcs], get, envir = environment())
   names(out) <- relabs[all_funcs %in% funcs]
   return(out)
@@ -514,14 +262,14 @@ relabel_summarize <- function(seed, pattern, funcs = c("K", "G", "F", "GXGH"),
 #' @param ... maxKr, nKr, maxGr, nGr, maxGXGHr, maxGXHGr, nGXr
 #'
 #' @description Cacluate that summary functions included in `funcs` on `pattern`, a point pattern
-#' of class ppp or pp3.
+#' of class ppp or pp3.  Now can do advanced nearest neighbor if `funcs` contains `G2`, `G3`, etc.
 #' @export
 calc_summary_funcs <- function(pattern, funcs = c("K", "G", "F", "GXGH"),
-                               dopant_formula, host_formula, k = 1,
+                               dopant_formula, host_formula,
                                maxKr = 10, nKr = 200, maxGr = 5, nGr = 1000,
                                maxGXGHr = 3, maxGXHGr = 8, nGXr = 1000, vside = 0.3,
                                K_cor = "trans", G_cor = "km", F_cor = "km",
-                               GXGH_cor = "km", GXHG_cor = "km") {
+                               GXGH_cor = "km", GXHG_cor = "km", G2_cor = "km") {
   # select only the dopant type points
   pattern_dopant <- subset(pattern, marks == dopant_formula)
 
@@ -536,6 +284,13 @@ calc_summary_funcs <- function(pattern, funcs = c("K", "G", "F", "GXGH"),
     }
     if ("G" %in% funcs) {
       G <- G3est(pattern_dopant, rmax = maxGr, nrval = nGr, correction = G_cor)
+    }
+    for (i in 2:10) {
+      if (paste("G", i, sep = "") %in% funcs) {
+        G_i = G3est_nn(dopant_relabeled,  rmax = maxGr, nrval = nGr,
+                       k = i, correction = G2_cor)
+        assign(paste("G", i, sep=""), G_i)
+      }
     }
     if ("F" %in% funcs) {
       F <- F3est(pattern_dopant, rmax = maxGr, nrval = nGr, correction = F_cor, vside = vside)
@@ -557,7 +312,14 @@ calc_summary_funcs <- function(pattern, funcs = c("K", "G", "F", "GXGH"),
       K <- Kest(pattern_dopant, r = seq(0, maxKr, length.out = nKr), correction = K_cor)
     }
     if ("G" %in% funcs) {
-      G <- Gest_nn(pattern_dopant, r = seq(0, maxGr, length.out = nGr), correction = G_cor, k = k)
+      G <- Gest_nn(pattern_dopant, r = seq(0, maxGr, length.out = nGr), correction = G_cor, k = 1)
+    }
+    for (i in 2:10) {
+      if (paste("G", i, sep = "") %in% funcs) {
+        G_i = Gest_nn(pattern_dopant, r = seq(0, maxGr, length.out = nGr),
+                      correction = G2_cor, k = i)
+        assign(paste("G", i, sep=""), G_i)
+      }
     }
     if ("F" %in% funcs) {
       F <- Fest(pattern_dopant, r = seq(0, maxGr, length.out = nGr), correction = F_cor)
@@ -576,8 +338,15 @@ calc_summary_funcs <- function(pattern, funcs = c("K", "G", "F", "GXGH"),
     }
   }
 
+
   all_funcs <- c("K", "G", "F", "GXGH", "GXHG")
+  G_nn = rep(NA, 9)
+  for (i in 2:10) {
+    G_nn[i-1] = paste("G", i, sep = "")
+  }
+  all_funcs = c(all_funcs, G_nn)
   relabs <- c("K", "G", "F", "GXGH", "GXHG")
+  relabs = c(relabs, G_nn)
   out <- lapply(relabs[all_funcs %in% funcs], get, envir = environment())
   names(out) <- relabs[all_funcs %in% funcs]
   return(out)
@@ -645,7 +414,7 @@ plot_summary <- function(func = "K",
                          sqrt = "K", raw = "FALSE",
                          base_value = "first", unit = "nm",
                          K_cor = "trans", G_cor = "km", F_cor = "km",
-                         GXGH_cor = "km", GXHG_cor = "km",
+                         GXGH_cor = "km", GXHG_cor = "km", G2_cor = "km",
                          alpha = 0.5,
                          legend.key.size = 20, legend.text.size = 20,
                          legend.position =  c(0.75, 0.80),
@@ -657,13 +426,28 @@ plot_summary <- function(func = "K",
   if (all(is.na(fill.colors))) {
     fill.colors = pattern.colors
   }
+
+
+  for (i in 2:10) {
+    nm =paste("G", i, sep = "")
+    if (func == nm) {
+      assign(paste("G", i, "_cor", sep=""), G2_cor)
+    }
+  }
+
   cor = paste(func, "_cor", sep = "")
+
   cor = get(cor)
 
   rrl = paste("rrl_", func, sep = "")
   ylabs = list("K" = expression(tilde(K)[g](r)), "G" = expression(tilde(G)[g](r)),
                "F" = expression(tilde(F)[g](r)),
-               "GXGH" = expression(tilde(G)[gh](r)), "GXHG" = expression(tilde(G)[hg](r)))
+               "GXGH" = expression(tilde(G)[gh](r)), "GXHG" = expression(tilde(G)[hg](r)),
+               "G2" = expression(tilde(G)[2,g](r)), "G3" = expression(tilde(G)[3,g](r)),
+               "G4" = expression(tilde(G)[4,g](r)), "G5" = expression(tilde(G)[5,g](r)),
+               "G6" = expression(tilde(G)[6,g](r)), "G7" = expression(tilde(G)[7,g](r)),
+               "G8" = expression(tilde(G)[8,g](r)), "G9" = expression(tilde(G)[9,g](r)),
+               "G10" = expression(tilde(G)[10,g](r)))
 
 
   ## if returning the square root of the difference, rather than the difference
