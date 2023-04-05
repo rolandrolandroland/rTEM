@@ -363,6 +363,12 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
   ## normalize size_fracs so that they add to 1
   size_fracs = size_fracs / sum(size_fracs)
 
+  ## get rid of any 0's at the end of the size_fracs vector
+  for (i in 1:length(size_fracs)) {
+    if (size_fracs[length(size_fracs)] == 0) {
+      size_fracs = size_fracs[1:(length(size_fracs) - 1)]
+    }
+  }
 
   # rescale UPP pattern to match physical system (1 point per nm)
   upp_scaled = rTEM::rescale_pattern(upp, intensity_upp)
