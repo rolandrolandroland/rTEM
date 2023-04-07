@@ -17,6 +17,9 @@ get_features(
   sqrt = "K",
   K_cor = "trans",
   G_cor = "km",
+  G2_cor = "km",
+  G3_cor = "km",
+  G4_cor = "km",
   F_cor = "km",
   GXGH_cor = "km",
   GXHG_cor = "km"
