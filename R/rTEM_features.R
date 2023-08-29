@@ -6,7 +6,9 @@
 #' @export
 get_features = function(expected, simulated,
                         funcs = c("G", "K", "F"),
-                        features = list(c("max_diff", "min_diff", "total_diff", "net_diff",
+                        features = list(c("max_diff", "min_diff",
+                                          "total_norm_diff", "total_norm_diff_squared",
+                                          "total_diff", "net_diff",
                                           "max_diff_envelope", "min_diff_envelope",
                                           "total_diff_envelope", "net_diff_envelope",
                                           "T_final", "T_final_ratio")),
@@ -53,6 +55,8 @@ get_features = function(expected, simulated,
     dr = expected[[func]]$r[2] - expected[[func]]$r[1]
 
     rrl = paste(simulated_outer_name, func, sep = "")
+    env_width =  (take_root(simulated[[rrl]][, simulated_inner_name[4]]) -  take_root(simulated[[rrl]][, simulated_inner_name[3]])) / 2
+
     if ("max_diff" %in% feats) {
       max_diff = max(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))
 
@@ -61,6 +65,16 @@ get_features = function(expected, simulated,
     if ("min_diff" %in% feats) {
       min_diff = min(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))
     }
+
+    if ("total_norm_diff" %in% feats) {
+      total_norm_diff =sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]])) /env_width, na.rm = TRUE) *dr
+    }
+
+    if ("total_norm_diff_squared" %in% feats) {
+
+      total_norm_diff_squared = sum(abs((take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))/env_width)^2, na.rm = TRUE ) * dr
+    }
+
 
     if ("total_diff" %in% feats) {
       total_diff = sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))) * dr
@@ -185,13 +199,13 @@ T_test = function(observed, expected, func = "G",
                               c(NA, "cor_name"), expect_name = c("rrl_", "mmean"))
   hi = expected[[rrl]]$hi
   T_env_hi = calc_T_val_observed(observed = hi, expected =expected,
-                                 r = simulated$rrl_G$r,
+                                 r = expected[[rrl]]$r,
                                  func = func, rmin = rmin, rmax = rmax,
                                  sqrt = "K",
                                  c(NA, "cor_name"), expect_name = c("rrl_", "mmean"))
   lo = expected[[rrl]]$lo
   T_env_lo = calc_T_val_observed(observed = lo, expected =expected,
-                                 r = simulated$rrl_G$r,
+                                 r = expected[[rrl]]$r,
                                  func = func, rmin = rmin, rmax = rmax,
                                  sqrt = "K",
                                  c(NA, "cor_name"), expect_name = c("rrl_", "mmean"))

@@ -234,11 +234,15 @@ relabel_summarize <- function(seed, pattern, funcs = c("K", "G", "F", "GXGH"),
 
   all_funcs <- c("K", "G", "F", "GXGH", "GXHG")
 
+  G_funcs = rep(NA, 9)
+  for (i in 2:10) {
+    G_funcs[i-1] = paste("G", i, sep = "")
+  }
+  all_funcs = c(all_funcs, G_funcs)
   G_nn = rep(NA, 9)
   for (i in 2:10) {
-    G_nn[i-1] = paste("G", i, sep = "")
+    G_nn[i-1] = paste("rrl_G", i, sep = "")
   }
-  all_funcs = c(all_funcs, G_nn)
 
   #all_funcs %in% funcs
   relabs <- c("rrl_K", "rrl_G", "rrl_F", "rrl_GXGH", "rrl_GXHG")
@@ -287,7 +291,7 @@ calc_summary_funcs <- function(pattern, funcs = c("K", "G", "F", "GXGH"),
     }
     for (i in 2:10) {
       if (paste("G", i, sep = "") %in% funcs) {
-        G_i = G3est_nn(dopant_relabeled,  rmax = maxGr, nrval = nGr,
+        G_i = G3est_nn(pattern_dopant,  rmax = maxGr, nrval = nGr,
                        k = i, correction = G2_cor)
         assign(paste("G", i, sep=""), G_i)
       }
@@ -354,7 +358,7 @@ calc_summary_funcs <- function(pattern, funcs = c("K", "G", "F", "GXGH"),
 
 
 
-#' Plot summary functions (developement version)
+#' Plot summary functions
 #' @param func Summary function to plot.
 #' @param observed_values a list. observed summary function value. Must have one of the following structures
 #' \itemize{
@@ -605,7 +609,10 @@ plot_summary <- function(func = "K",
       x = r, ymin = (lo) ,
       ymax = (hi) , color = type, fill = type
     )) +
-      geom_ribbon(alpha = alpha, linewidth = linewidth, linetype = linetype) +
+      geom_ribbon(alpha = alpha, linewidth = env_linewidth, linetype = env_linetype) +
+      geom_line(aes(x = r, y = lo, color = type, fill = type),
+                linewidth = linewidth, linetype = env_linetype,
+                data = filter(long, type == "Observed") ) +
       geom_hline(yintercept = 0)# +
     # geom_line(aes(x= r, y = sqrt(mmean) , color = type))
 
@@ -631,4 +638,3 @@ plot_summary <- function(func = "K",
       ggtitle(title)
   }
 }
-

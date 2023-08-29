@@ -10,6 +10,8 @@ create_groups(
   upp_host,
   probs = c(1, 0, 0, 0, 0, 0),
   weights = c(1, 1, 1),
+  trans_plane = c("x", "y"),
+  trans_frac = 0.5,
   sample_method = "rank",
   group_size = 2,
   exponent = 1
@@ -31,7 +33,9 @@ selected in \eqn{p_1}, the probability of the second is \eqn{p_2}, and so on}
 \item{weights}{vector of length equal to number of dimensions in \emph{upp}.
 the weighted distance to each of \emph{num_neighbors} nearest neighbors
 is calculated using \eqn{\sqrt{w_1 x^2 + w_2 y^2 + w_3 z^2}},
- where \emph{weights} = (\eqn{w_1, w_2, w_3}). Set to \emph{c(1, 1, 0)} for vertical dimers.}
+ where \emph{weights} = (\eqn{w_1, w_2, w_3}). Set to \emph{c(1, 1, 0)} for vertical dimers.
+ @param trans_plane plane for translating
+ @param trans_frac fraction of distance in plane `trans_plane` to reduce distance by}
 
 \item{sample_method}{if equal to \emph{"rank"}, the probability of a point of rank \emph{x}
 being chosen as a guest is \emph{probs[x]}.  If equal to  \emph{"exp"},
@@ -59,5 +63,7 @@ then they will be ranked by distance.
 guest type.}
 \item{Step 4:} {Deal with duplicates.  If `upp_guest` contains points that are close enough to each
 other, it is possible they will share nearest neighbors.  If any point is selected twice, then
-another shall be selected to maintain the proper number of guests}}
+another shall be selected to maintain the proper number of guests}
+\item{Step 5:} {Translate.  All selected neighbors are translated in the `trans_plane` plane so that the
+distance to their respective guest point in the `trans_plane` plane is reduced by a fraction of `trans_frac` }}
 }

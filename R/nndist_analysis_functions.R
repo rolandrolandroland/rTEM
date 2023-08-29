@@ -79,19 +79,19 @@ nndist_func_plotter = function(image, image2 = NULL, nn_vec = 1:5, location = ge
 
 #' Plot and Save Histograms of nndist function
 #'
-#'  @param image Image of type ppp or pp3 to calculate distances from
-#'  @param image2 will be NULL (default) if using \code{\link[spatstat.geom]{nndist}} function on `image`.  Otherwise, set as same class as `image` (ppp or pp3) to
-#'  calculate distances to using (\code{\link[spatstat.geom]{nncross}})
-#'  @param value determines the output.  If = "percent", then rows are NN number, columns are distance, and value is percent.  If = "distance",
-#'  rows are NN number, columns are percent, and `value` is distance
-#'  @param rads_vec vector of distances to calculate percents at. Only used if `value` = "percent"
-#'  @param nn_vec vector of integers values to determine which nearest neighbors to calculate
-#'  @param perc_vec vector of percent values between 0 and 1 (inclusive) to calculate distances for.  Only used if `value` = "distance"
-#'  @param output set to "plot" (default) if only plotting.  Set to "save" if plotting and saving
-#'  @param location location to save image to if `output = save`.  default is working directory.
-#'  @param image_name Name to save image as.  Will have `_NN_dist_perc.png` added to it if `value` = "percent" or `_NN_perc_dist.png` if `value` = "distance"
-#'  @param unit distance unit name to be added to plot name
-#'  @param round_to number of decimal places to round values to
+#' @param image Image of type ppp or pp3 to calculate distances from
+#' @param image2 will be NULL (default) if using \code{\link[spatstat.geom]{nndist}} function on `image`.  Otherwise, set as same class as `image` (ppp or pp3) to
+#' calculate distances to using (\code{\link[spatstat.geom]{nncross}})
+#' @param value determines the output.  If = "percent", then rows are NN number, columns are distance, and value is percent.  If = "distance",
+#' rows are NN number, columns are percent, and `value` is distance
+#' @param rads_vec vector of distances to calculate percents at. Only used if `value` = "percent"
+#' @param nn_vec vector of integers values to determine which nearest neighbors to calculate
+#' @param perc_vec vector of percent values between 0 and 1 (inclusive) to calculate distances for.  Only used if `value` = "distance"
+#' @param output set to "plot" (default) if only plotting.  Set to "save" if plotting and saving
+#' @param location location to save image to if `output = save`.  default is working directory.
+#' @param image_name Name to save image as.  Will have `_NN_dist_perc.png` added to it if `value` = "percent" or `_NN_perc_dist.png` if `value` = "distance"
+#' @param unit distance unit name to be added to plot name
+#' @param round_to number of decimal places to round values to
 #'
 #' @description
 #' calculate percent of each nearest neighbor (NN) in `nn_vec` that are less than x `unit` in `rads_vec` apart if `value` = "percent" or calculate the distance

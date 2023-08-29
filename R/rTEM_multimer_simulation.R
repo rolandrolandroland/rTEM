@@ -11,6 +11,8 @@ get_ranks = function(distance, weights) {
   rank(weighted_dist)
 }
 
+
+
 #' Pick Neighbor
 #' @param ranks ranks for each point.  If based upon a weighted distance, then may not directly
 #' correspond to the `distances`.
@@ -55,6 +57,8 @@ pick_neighbor = function(ranks, probs, distances = NA,
 #' the weighted distance to each of \emph{num_neighbors} nearest neighbors
 #' is calculated using \eqn{\sqrt{w_1 x^2 + w_2 y^2 + w_3 z^2}},
 #'  where \emph{weights} = (\eqn{w_1, w_2, w_3}). Set to \emph{c(1, 1, 0)} for vertical dimers.
+#'  @param trans_plane plane for translating
+#'  @param trans_frac fraction of distance in plane `trans_plane` to reduce distance by
 #' @param sample_method if equal to \emph{"rank"}, the probability of a point of rank \emph{x}
 #'  being chosen as a guest is \emph{probs[x]}.  If equal to  \emph{"exp"},
 #'  the probability of a point of rank \emph{x} being chosen
@@ -75,10 +79,13 @@ pick_neighbor = function(ranks, probs, distances = NA,
 #' guest type.}
 #' \item{Step 4:} {Deal with duplicates.  If `upp_guest` contains points that are close enough to each
 #' other, it is possible they will share nearest neighbors.  If any point is selected twice, then
-#' another shall be selected to maintain the proper number of guests}}
+#' another shall be selected to maintain the proper number of guests}
+#' \item{Step 5:} {Translate.  All selected neighbors are translated in the `trans_plane` plane so that the
+#' distance to their respective guest point in the `trans_plane` plane is reduced by a fraction of `trans_frac` }}
 #' @export
 create_groups = function(num_neighbors = 6, upp_guest, upp_host,
                          probs = c(1, 0, 0, 0, 0, 0), weights = c(1, 1, 1),
+                         trans_plane = c("x", "y"), trans_frac = 0.5,
                          sample_method = "rank", group_size = 2, exponent = 1) {
 
   ## this is to be done to each group
@@ -237,10 +244,26 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
 
     print(paste("loop duplicate ", sum(duplicate)))
   }
-  #dim(chosen_points)
 
-  return(chosen_points)
+  # for chosen_points, translate them in the trans_plane to reduce weighted distance by trans_frac
+  #dim(chosen_points)
+  colnames(coords(upp_guest))
+  trans_coords = sapply(colnames(coords(upp_guest)), function(dim) {
+    if (dim %in% trans_plane) {
+      dist = coords(upp_guest)[,dim] - chosen_points[,dim]
+      new_dists = dist * trans_frac
+      new_coord = coords(upp_guest)[,dim] - new_dists
+    }
+    else {
+      new_coord =chosen_points[,dim]
+    }
+  })
+  out = list("original" = chosen_points,
+             "translated" = as.data.frame(trans_coords))
+  ## i must keep the original chosen_points so that we can remove them from the remaining guest pattern
+  return(out)
 }
+
 
 #' Multimer Simulation
 #' @param guest_pattern point pattern of class \emph{ppp} or \emph{pp3}.  The final multtimer
@@ -278,6 +301,8 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
 #' @param probs vector of probabilities.
 #' For \eqn{probs = c(p_1, p_2, p_3, p_4)}, the probability of the first NN being
 #' selected in \eqn{p_1}, the probability of the second is \eqn{p_2}, and so on
+#'  @param trans_plane plane for translating
+#'  @param trans_frac fraction of distance in plane `trans_plane` to reduce distance by
 #' @param intensity_upp the \emph{upp} will be rescaled to have this intensity before the
 #' marks are assigned. Leave as \emph{NA} to use \emph{upp} as it is
 #' @description Under construction. See \code{\link{multimersim}} for stable version.
@@ -334,6 +359,7 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
                        sample_method = "rank", exponent = 1,
                        weights = c(1, 1, 1),
                        probs = c(1, 0, 0, 0),
+                       trans_plane = c("x", "y"), trans_frac = 0.5,
                        intensity_upp = NA) {
 
   ## check input parameters
@@ -472,12 +498,15 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
                                 z = chosen_points$z[guests_to_add_to], window = box_3d)
 
           chosen_points = create_groups(num_neighbors = num_neighbors, upp_guest = guests_to_add_to, upp_host = new_host,
-                                        probs = probs, weights = weights, sample_method = sample_method, group_size = 2, exponent = exponent)
+                                        probs = probs, weights = weights,
+                                        trans_plane = trans_plane, trans_frac = trans_frac,
+                                        sample_method = sample_method, group_size = 2, exponent = exponent)
 
-          all_guest = rbind(coords(all_guest), chosen_points)
+          all_guest = rbind(coords(all_guest), chosen_points$translated)
           all_guest = pp3(x = all_guest$x, y = all_guest$y, all_guest$z,  window = box_3d)
 
-          ind = match(do.call("paste", chosen_points), do.call("paste", coords(new_host)))
+          ind = match(do.call("paste", chosen_points$original), do.call("paste", coords(new_host)))
+          chosen_points = chosen_points$translated
           new_host = pp3(new_host$data$x[-ind], new_host$data$y[-ind], new_host$data$z[-ind], window = box_3d)
 
         }
@@ -552,12 +581,18 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
                                 window = box_2d)
 
 
+
           chosen_points = create_groups(num_neighbors = num_neighbors, upp_guest = guests_to_add_to, upp_host = new_host,
-                                        probs = probs, weights = weights, sample_method = sample_method, group_size = 2, exponent = exponent)
-          all_guest = rbind(coords(all_guest), chosen_points)
+                                        probs = probs, weights = weights,
+                                        trans_plane = trans_plane, trans_frac = trans_frac,
+                                        sample_method = sample_method, group_size = 2, exponent = exponent)
+
+          all_guest = rbind(coords(all_guest), chosen_points$translated)
           all_guest = ppp(x = all_guest$x, y = all_guest$y,  window = box_2d)
 
-          ind = match(do.call("paste", chosen_points), do.call("paste", coords(new_host)))
+          ind = match(do.call("paste", chosen_points$original), do.call("paste", coords(new_host)))
+          chosen_points = chosen_points$translated
+
           new_host = ppp(new_host$x[-ind], new_host$y[-ind], window = box_2d)
 
         }
@@ -659,12 +694,16 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
                               y = chosen_points$y[guests_to_add_to],
                               z = chosen_points$z[guests_to_add_to], window = box_3d)
 
+
         chosen_points = create_groups(num_neighbors = num_neighbors, upp_guest = guests_to_add_to, upp_host = new_host,
-                                      probs = probs, weights = weights, sample_method = sample_method, group_size = 2, exponent = exponent)
-        all_guest = rbind(coords(all_guest), chosen_points)
+                                      probs = probs, weights = weights,
+                                      trans_plane = trans_plane, trans_frac = trans_frac,
+                                      sample_method = sample_method, group_size = 2, exponent = exponent)
+        all_guest = rbind(coords(all_guest), chosen_points$translated)
         all_guest = pp3(x = all_guest$x, y = all_guest$y, all_guest$z,  window = box_3d)
 
-        ind = match(do.call("paste", chosen_points), do.call("paste", coords(new_host)))
+        ind = match(do.call("paste", chosen_points$original), do.call("paste", coords(new_host)))
+        chosen_points = chosen_points$translated
         new_host = pp3(new_host$data$x[-ind], new_host$data$y[-ind], new_host$data$z[-ind], window = box_3d)
 
       }
@@ -682,3 +721,4 @@ multimersim = function(guest_pattern = NULL, upp, output = "guest pattern type",
 
   }
 }
+
