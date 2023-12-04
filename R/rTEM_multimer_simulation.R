@@ -252,7 +252,7 @@ create_groups = function(num_neighbors = 6, upp_guest, upp_host,
     if (dim %in% trans_plane) {
       dist = coords(upp_guest)[,dim] - chosen_points[,dim]
       new_dists = dist * trans_frac
-      new_coord = coords(upp_guest)[,dim] - new_dists
+      new_coord = chosen_points[,dim] + new_dists
     }
     else {
       new_coord =chosen_points[,dim]
