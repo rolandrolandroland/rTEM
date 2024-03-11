@@ -15,7 +15,9 @@ nn_dist_perc_table(
   perc_vec = seq(0, 1, 0.1),
   output = "plot",
   location = getwd(),
-  pattern_name = "pattern",
+  image_name = "pattern",
+  from_name = "Molecule1",
+  to_name = NA,
   unit = "nm",
   round_to = 2,
   ...
@@ -35,6 +37,8 @@ rows are NN number, columns are percent, and `value` is distance}
 
 \item{location}{location to save image to if `output = save`.  default is working directory.}
 
+\item{image_name}{Name to save image as.  Will have `_NN_dist_perc.png` added to it if `value` = "percent" or `_NN_perc_dist.png` if `value` = "distance"}
+
 \item{unit}{distance unit name to be added to plot name}
 
 \item{round_to}{number of decimal places to round values to}
@@ -43,8 +47,6 @@ rows are NN number, columns are percent, and `value` is distance}
 
 \item{image2}{will be NULL (default) if using \code{\link[spatstat.geom]{nndist}} function on `image`.  Otherwise, set as same class as `image` (ppp or pp3) to
 calculate distances to using (\code{\link[spatstat.geom]{nncross}})}
-
-\item{image_name}{Name to save image as.  Will have `_NN_dist_perc.png` added to it if `value` = "percent" or `_NN_perc_dist.png` if `value` = "distance"}
 }
 \value{
 returns at matrix. If `value` = "percent", then rows are NN number, columns are distance, and value is percent.  If `value` = "distance",

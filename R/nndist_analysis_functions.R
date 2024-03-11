@@ -112,10 +112,15 @@ nn_dist_perc_table = function(pattern, pattern2 = NULL,
                               rads_vec = 1:25, nn_vec = 1:5,
                               perc_vec = seq(0, 1, 0.1), output = "plot",
                               location = getwd(),
-                              pattern_name = "pattern",
+                              image_name = "pattern",
+                              from_name = "Molecule1",
+                              to_name = NA,
                               unit = "nm", round_to = 2, ...) {
   distances = nndist_subset(pattern, pattern2, window, drop_isolated, k = nn_vec, output = "matrix")
   distances = distances[complete.cases(distances),]
+  if (is.na(to_name)) {
+    to_name = from_name
+  }
   # if the desired matrix data type is percent
   if (value == "percent") {
     # calculate the percent of values that are smaller than each rads_vec value for each nn_vec value
@@ -135,13 +140,15 @@ nn_dist_perc_table = function(pattern, pattern2 = NULL,
     # if saving, then make prettier using kable then save
     else if (output == "save") {
       print("Save")
-      out %>% kableExtra::kable(caption = "Percent with all NN within Distance") %>%
+      cap = paste("Percent of all", from_name, "with Xth nearest",
+                      to_name, "neighbor within Distance X")
+      out %>% kableExtra::kable(caption =cap) %>%
         kable_styling(latex_options = c("striped")) %>%
-        save_kable(paste(location, "/", pattern_name, "_NN_dist_perc.png", sep = ""))
+        save_kable(paste(location, "/", image_name, "_NN_perc.png", sep = ""))
       return(out)
     }
     else {
-      print("Error: output must be either 'print' or 'save'")
+      print("Error: output must be either 'plot' or 'save'")
     }
   }
   # if matrix values are distances
@@ -158,13 +165,14 @@ nn_dist_perc_table = function(pattern, pattern2 = NULL,
     }
     else if (output == "save") {
       print("Save")
-      out %>% kableExtra::kable(caption = "Distance at Which X% of points have Y NN's") %>%
+      cap = paste("Distance at which X% of", from_name, "points have Y", to_name, "NN's")
+      out %>% kableExtra::kable(caption = cap) %>%
         kable_styling(latex_options = c("striped")) %>%
-        save_kable(paste(location, "/", pattern_name, "_NN_perc_dist.png", sep = ""))
+        save_kable(paste(location, "/", image_name, "_NN_dist.png", sep = ""))
       return(out)
     }
     else {
-      print("Error: output must be either 'print' or 'save'")
+      print("Error: output must be either 'plot' or 'save'")
     }
   }
   else {
@@ -311,6 +319,6 @@ data_frame_list_averager = function(data, output = "plot",
     return(out)
   }
   else {
-    print("Error: output must be either 'print' or 'save'")
+    print("Error: output must be either 'plot' or 'save'")
   }
 }
