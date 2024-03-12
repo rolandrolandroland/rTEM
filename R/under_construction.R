@@ -230,15 +230,13 @@ multimersim_dev = function(guest_pattern = NULL, upp, output = "guest pattern ty
           print(paste("pre ", i, size_fracs[i]))
 
           # sample the new guest points for the ones that should be trimers
-          if (size_fracs[i]) {
+          if (sum(size_fracs[i:length(size_fracs)])) {
 
-            print(paste("do ", i, size_fracs[i]))
             n_guest_to_add_to = nrow(chosen_points) - size_dist[i-1]
             guests_to_add_to = sample(1:nrow(chosen_points), n_guest_to_add_to)
             guests_to_add_to =pp3(x = chosen_points$x[guests_to_add_to],
                                   y = chosen_points$y[guests_to_add_to],
                                   z = chosen_points$z[guests_to_add_to], window = box_3d)
-            print(guests_to_add_to)#
             chosen_points = create_groups(num_neighbors = num_neighbors, upp_guest = guests_to_add_to, upp_host = new_host,
                                           probs = probs, weights = weights,
                                           trans_plane = trans_plane, trans_frac = trans_frac,
