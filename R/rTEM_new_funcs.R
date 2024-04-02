@@ -1,12 +1,14 @@
 #' Preprocess UPP data
 #'
 #' @export
-UPP_preprocess = function(upp, guest_pattern, min_thick = NA, max_thick = NA, intensity_upp = 1, n_guests = NA) {
+UPP_preprocess = function(upp, guest_pattern,
+                          min_thick = NA, max_thick = NA,
+                          intensity_upp = 1, n_guests = NA) {
   if (is.na(max_thick)) {
-    max_thick = max(upp_scaled$domain$zrange)
+    max_thick = max(upp$domain$zrange)
   }
   if (is.na(min_thick)) {
-    min_thick = min(upp_scaled$domain$zrange)
+    min_thick = min(upp$domain$zrange)
   }
   # case 1 guest pattern 2d, UPP pattern is 3d,
   if (is.ppp(guest_pattern)) {
