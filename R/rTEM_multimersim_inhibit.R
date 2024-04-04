@@ -303,7 +303,7 @@ multimersim_inhibit = function(guest_pattern = NULL,
         chosen_from_over = findNearestPoints(upp_guest_over, upp_host_under, n = 1)
         upp_guest = data.frame(rbind(upp_guest_under$data[,c("x", "y", "z")],
                                      chosen_from_over[,c("x", "y", "z")]))
-        upp_host = setdiff(coords(upp_host_under), upp_guest)
+        upp_host = as.data.frame(setdiff(coords(upp_host_under), upp_guest[c("x", "y", "z")]))
         upp_guest$marks = "G"
         upp_host$marks = "H"
         multimer_coords = data.frame(x = c(upp_guest$x, upp_host$x),
@@ -331,7 +331,7 @@ multimersim_inhibit = function(guest_pattern = NULL,
         # This is done by matching coordinates and then finding which rows in upp_host_coords
         # do NOT have a match in chosen_points_df
 
-        to_keep = setdiff(coords(upp_host_under), chosen_points)
+        to_keep = as.data.frame(setdiff(coords(upp_host_under), chosen_points[c("x", "y", "z")]))
 
         new_host = pp3(to_keep$x, to_keep$y, to_keep$z, box_3d)
         all_guest = pp3(x = chosen_points$x, y = chosen_points$y, z = chosen_points$z,
