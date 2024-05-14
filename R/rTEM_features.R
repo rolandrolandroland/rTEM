@@ -1,3 +1,118 @@
+#' Get p value
+#' @param observed a vector
+#' @param expected a matrix or dataframe
+#' @export
+calc_p_value  = function(observed, expected, r = NULL,
+                         funcs = c("K", "G", "F"),
+                         obs_name = c(NA, "cor_name"), expect_name = c("rrl_", "cor_name"),
+                         K_cor = "trans", G_cor = "km",
+                         F_cor = "km", GXGH_cor = "km", GXHG_cor = "km",
+                         G2_cor = "km") {
+  # If we prefer to compute a P value instead of specifying a fixed significance level a, the test procedure is as follows.
+  # .... Baddeley paper
+
+
+  for (i in 2:10) {
+    nm =paste("G", i, sep = "")
+    if (any(funcs == nm)) {
+      assign(paste("G", i, "_cor", sep=""), G2_cor)
+    }
+  }
+  out = lapply(funcs, function(func) {
+    cor = paste(func, "_cor", sep = "")
+    cor = get(cor)
+
+    obs_name[obs_name == "cor_name"] = cor
+    obs_name[obs_name == "rrl_"] = paste("rrl_", func, sep = "")
+    obs_name[is.na(obs_name)] = func
+
+    expect_name[expect_name == "cor_name"] = cor
+    expect_name[is.na(expect_name)] = func
+    expect_name[expect_name == "rrl_"] = paste("rrl_", func, sep = "")
+    ## make accepting of multiple data types
+    # 1 list
+    if (is.list(observed)) {
+      if (is.numeric(observed[[1]])) {
+        H_obs = as.data.frame(observed[[obs_name[1]]])
+        H_obs = H_obs[,1]
+        r = observed$r
+      }
+      #there's another level to it
+      else {
+        H_obs = as.data.frame(observed[[obs_name[1]]])
+        r = H_obs$r
+        H_obs = H_obs[,obs_name[2]]
+      }
+    }
+
+    else if (is.numeric(observed) && !is.null(r)) {
+      H_obs = observed
+    }
+
+    else if (is.numeric(observed) && is.null(r)) {
+      stop("ERROR: your `observed` object does not contain an r vector.  Please set
+         the input variable `r` equal to a vector of r values of same length as `observed` object")
+    }
+
+    else if (is.data.frame(observed) && obs_name) {
+      H_obs = observed[,obs_name[1]]
+      r = observed[,"r"]
+    }
+    else if (is.data.frame(observed) && !obs_name) {
+      stop("ERROR: please set input variable `obs_name` equal to the column name for your observed variable")
+    }
+
+    ## make accepting of multiple data types for `expected` object
+    # 1 list
+    if (is.list(expected)) {
+      if (is.numeric(expected[[1]])) {
+        H_bar = as.data.frame(expected[[expect_name[1]]])
+        H_bar = H_bar[,1]
+      }
+      #there's another level to it
+      else {
+        H_bar = sapply(expected, function(val) {
+          val[[expect_name[1]]][[expect_name[2]]]
+        })
+        H_bar = as.data.frame(t(H_bar))
+        #H_bar = as.data.frame(expected[[expect_name[1]]])
+        #H_bar = H_bar[,expect_name[[2]]]
+      }
+    }
+
+    else if (is.numeric(expected)) {
+      H_bar = expected
+    }
+
+    else if (is.data.frame(expected) && expect_name) {
+      H_bar = expected[,expect_name[1]]
+    }
+    else if (is.data.frame(expect_name) && !expect_name) {
+      stop("ERROR: please set input variable `expect_name` equal to the column name for your expected variable")
+    }
+
+    j = sapply(1:length(H_obs), function(i) {
+      #med = median(H_bar[,i])
+      ##over = sum(H_bar[,i] < H_obs[i] & H_bar[i] < med)
+      #under = sum(H_bar[,i] > H_obs[i] & H_bar[i] > med)
+      #over + under
+      over = sum(H_bar[,i] > H_obs[i])
+    })
+
+    m = nrow(H_bar)
+    p1 = (j + 1) / (m + 1)
+    p2 = (m + 1 - j) /(m+1)
+    p = 2*apply(cbind(p1, p2), 1, min)
+
+
+    out = data.frame(r = r,
+                     p = p)
+  })
+  names(out) = funcs
+  out
+}
+
+
 #' Get Features
 #' @param expected a list of summary functions for the observed value
 #' @param simulated a list of

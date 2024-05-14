@@ -1,3 +1,51 @@
+#' Find Points
+#' @param OVER overlying point pattern
+findNearestPoints_dep <- function(OVER, UNDER, n = 1) {
+  # Ensure OVER and UNDER are pp3 objects and n is a positive integer
+  if (!inherits(OVER, "pp3") || !inherits(UNDER, "pp3")) {
+    stop("Both OVER and UNDER must be pp3 objects")
+  }
+  if (!is.numeric(n) || n <= 0 || n != round(n)) {
+    stop("n must be a positive integer")
+  }
+
+  i = 0
+  nn_same_under = TRUE
+  OVER_sub = OVER
+  UNDER_sub = UNDER
+  chosen_under = c()
+  while (sum(nn_same_under)) {
+    # Find the nearest neighbors from OVER to UNDER
+    # Exclude points in UNDER that are also in OVER
+    coords_over <- data.frame(x = OVER_sub$data$x, y = OVER_sub$data$y, z = OVER_sub$data$z)
+    coords_under <- data.frame(x = UNDER_sub$data$x, y = UNDER_sub$data$y, z = UNDER_sub$data$z,
+                               id = seq(1, nrow(UNDER_sub$data)))
+
+    nn <- nncross(OVER_sub, UNDER_sub, k =(n+i))
+    nn_df <- as.data.frame(nn)
+
+
+
+    # Ensure no point in UNDER is selected twice
+    # listed as index of nn_df
+    nn_same_under = duplicated(nn_df[,2]) | nn_df[,2] %in% chosen_under$id
+
+    # listed as index of nn_df
+    nn_dupe = nn_df[,1] == 0
+    redo = (nn_same_under | nn_dupe)
+    nn_unique = !redo
+
+    # Filter nn to exclude these points
+    OVER_sub = subset(OVER_sub, redo)
+
+    chosen_under = rbind(chosen_under, coords_under[nn_df[,2][nn_unique],])
+    i = i + 1
+  }
+
+  # Return the unique nearest neighbors without duplicates
+  return(chosen_under)
+}
+
 #' Calculate T value
 #'
 #' @param relabelings object from \code{\link[rTEM]{relabel_summarize}}
