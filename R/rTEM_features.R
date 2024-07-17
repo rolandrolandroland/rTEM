@@ -137,7 +137,12 @@ get_features = function(expected, simulated,
 
 {
 
-
+  for (i in 3:10) {
+    nm =paste("G", i, sep = "")
+    if (any(funcs == nm)) {
+      assign(paste("G", i, "_cor", sep=""), G2_cor)
+    }
+  }
   ## if features is only of length 1 and funcs is longer, then calculate all features in features[[1]] for each function
   if (length(features) == 1 ) {
     features = lapply(1:length(funcs), function(i) {
@@ -151,6 +156,7 @@ get_features = function(expected, simulated,
   }
 
   out = lapply(1:length(funcs), function(i) {
+
     func = funcs[i]
     if ((sqrt == "all") || (sqrt == "K" && func == "K")) {
       take_root = function(vector) {
@@ -164,9 +170,10 @@ get_features = function(expected, simulated,
         return(vector)
       }
     }
+    current_env = environment()
     feats = features[[i]]
     cor = paste(func, "_cor", sep = "")
-    cor = get(cor)
+    cor = get(cor)#, envir= environment())
     dr = expected[[func]]$r[2] - expected[[func]]$r[1]
 
     rrl = paste(simulated_outer_name, func, sep = "")
