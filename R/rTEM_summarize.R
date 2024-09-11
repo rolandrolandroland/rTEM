@@ -489,6 +489,7 @@ plot_summary <- function(func = "K",
       temp$lo = take_root(temp$lo) - baseline
       temp$hi = take_root(temp$hi) - baseline
       temp$mmean = take_root(observed[[cor]]) - baseline
+      temp = temp[c("r", "mmean", "lo", "hi", "type")]
 
       long <- rbind(long, temp)
       i <- i + 1
@@ -546,6 +547,8 @@ plot_summary <- function(func = "K",
       temp$lo = take_root(temp$lo) - take_root(baseline)
       temp$hi = take_root(temp$hi) - take_root(baseline)
       temp$mmean = take_root(temp$mmean) - take_root(baseline)
+      temp = temp[c("r", "mmean", "lo", "hi", "type")]
+
       long <- rbind(long, temp)
       i <- i + 1
 
@@ -638,3 +641,4 @@ plot_summary <- function(func = "K",
       ggtitle(title)
   }
 }
+

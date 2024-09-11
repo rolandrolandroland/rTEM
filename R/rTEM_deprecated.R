@@ -1,3 +1,277 @@
+#' Plot summary functions (deprecated 240911)
+#' @param envelopes a list envelope values found by
+#' function such as   \code{\link{calc_summary_funcs}}.  Should be list of length equal
+#' to the number of envelopes.  The structure should resemble:
+#' `envelopes[[envelope_num]]$rrl_K[, c("r", "mmean")]`
+#' @param pattern.colors colors and names for envelope lines.
+#'  MUST follow some formatting rules.  Envelope names must come first.
+#'  If each observed value corresponds to a different envelope, then
+#'  the number of `observed_values` must match `length(envelopes)` and only
+#'  the first `1:length(envelopes)` of `pattern_colors` will be used.
+#'  and must set `base_value = "each"`.  If not, each envelope and each observed
+#'  value needs its own color.  then the `mmean` value from
+#'  `envelopes[[1]]` will be subtracted from each envelope and observed value.
+#' @param fill.colors colors and names for envelope fill.  Match names to `pattern.colors`.
+#' Recommended to leave as NA and it will automattically be set to match  `pattern.colors`
+#' @param sqrt either `"K", "all", or "none"`. If `"K"`,
+#' then only \code{expression(tilde(K)[g](r))} will be found using the differences of the
+#' square roots, rather than differences.  If `"all"`, then all functions will be found
+#' using such.  If `"none"` (or actually anything other than the first two options) then
+#' no square roots are taken. Ignored if `raw = "TRUE"`
+#' @param raw.  A logical.  If TRUE, then no envelope mmeans are subtracted from each value
+#' @param base_value a character, either `"first" or "each"`.  Does each observed value
+#' correspond to a different envelope?  If yes, set to `"each"`. Otherwise, set to
+#' `"first"` and the envelopes[[1]] will be used for each
+#' @param unit a character.  This will appear as the units in the x axis label
+#' @param K_cor edge correction(s) to be used when `func = "K"`
+#' @param G_cor edge correction(s) to be used when `func = "G"`
+#' @param F_cor edge correction(s) to be used when `func = "F"`
+#' @param GXGH_cor edge correction(s) to be used when `func = "GXGH"`
+#' @param GXHG_cor edge correction(s) to be used when `func = "GXHG"`
+#' @param alpha numeric between 0 and 1.  Transparency of envelopes
+#' @param legend.key.size numeric.  size of legend key
+#' @param legend.text.size numeric. size of legend text
+#' @param legend.position.  vector of 2 numerics.  coordinates of legend
+#' @param axis.title.size numeric.  Size of axis title
+#' @param title a character.  Text for title
+#' @param title.size numeric.  Title size
+#' @param axis.text.x.size numeric.  size of text on x axis
+#' @param axis.text.y.size numeric.  size of text on y axis
+#' @param linewidth numeric.  Width of lines in plot
+#' @param env_linewidth numeric.  Width of lines that make up envelope edges
+#' @param linetype a character.  Type of lines that make up lines
+#' @param env_linetype a character.  Type of lines that make up  envelope lines
+#' @description Plot the observed value with envelopes for expected values for summary function
+#' @details The best way to learn about this function is to read the parameter definitions.
+plot_summary_240911 <- function(func = "K",
+                         observed_values, envelopes, ...,
+                         pattern.colors = c("Envelope 1" = "pink", "Envelope 2" = "gray", "Observed" = "blue"),
+                         fill.colors =  NA,
+                         sqrt = "K", raw = "FALSE",
+                         base_value = "first", unit = "nm",
+                         K_cor = "trans", G_cor = "km", F_cor = "km",
+                         GXGH_cor = "km", GXHG_cor = "km", G2_cor = "km",
+                         alpha = 0.5,
+                         legend.key.size = 20, legend.text.size = 20,
+                         legend.position =  c(0.75, 0.80),
+                         axis.title.size = 40,
+                         title = "", title.size = 40, axis.text.x.size = 40,
+                         axis.text.y.size = 40, linewidth = 0.5,  env_linewidth = 0.5,
+                         linetype = "solid",
+                         env_linetype = "dashed") {
+  if (all(is.na(fill.colors))) {
+    fill.colors = pattern.colors
+  }
+
+
+  for (i in 2:10) {
+    nm =paste("G", i, sep = "")
+    if (func == nm) {
+      assign(paste("G", i, "_cor", sep=""), G2_cor)
+    }
+  }
+
+  cor = paste(func, "_cor", sep = "")
+
+  cor = get(cor)
+
+  rrl = paste("rrl_", func, sep = "")
+  ylabs = list("K" = expression(tilde(K)[g](r)), "G" = expression(tilde(G)[g](r)),
+               "F" = expression(tilde(F)[g](r)),
+               "GXGH" = expression(tilde(G)[gh](r)), "GXHG" = expression(tilde(G)[hg](r)),
+               "G2" = expression(tilde(G)[2,g](r)), "G3" = expression(tilde(G)[3,g](r)),
+               "G4" = expression(tilde(G)[4,g](r)), "G5" = expression(tilde(G)[5,g](r)),
+               "G6" = expression(tilde(G)[6,g](r)), "G7" = expression(tilde(G)[7,g](r)),
+               "G8" = expression(tilde(G)[8,g](r)), "G9" = expression(tilde(G)[9,g](r)),
+               "G10" = expression(tilde(G)[10,g](r)))
+
+
+  ## if returning the square root of the difference, rather than the difference
+  if ((sqrt == "all") || (sqrt == "K" && func == "K")) {
+    take_root = function(vector) {
+      return(sqrt(vector))
+    }
+  }
+
+  # if not, just return the original vector
+  else {
+    take_root = function(vector) {
+      return(vector)
+    }
+  }
+  # if there is an envelope for each observed value, then plot envelopes separately
+  if ((length(envelopes) == length(observed_values)) && base_value != "first") {
+    print("start each")
+    long = data.frame("r" = c(),
+                      "mmean" = c(),
+                      "lo" = c(),
+                      "hi" = c(),
+                      "type" = c())
+    i <- 1
+    while (i <= length(envelopes)) {
+      temp <- envelopes[[i]][[rrl]]
+      observed <- observed_values[[i]][[func]]
+      temp$type <- names(pattern.colors)[i]
+      baseline = take_root(temp$mmean)
+
+      if (raw) {
+        baseline = 0
+      }
+
+      temp$lo = take_root(temp$lo) - baseline
+      temp$hi = take_root(temp$hi) - baseline
+      temp$mmean = take_root(observed[[cor]]) - baseline
+
+      long <- rbind(long, temp)
+      i <- i + 1
+    }
+
+    gplot <- long %>% ggplot2::ggplot(aes(
+      x = r, ymin = lo,
+      ymax = hi, color = type, fill = type
+    )) +
+      geom_ribbon(alpha = alpha, linewidth = env_linewidth, linetype = env_linetype) +
+      geom_hline(yintercept = 0) +
+      geom_line(aes(x= r, y = mmean, color = type), linewidth = linewidth, linetype = linetype)
+
+
+    gplot <- gplot + theme(
+      plot.title = element_text(hjust = 0.5, size = title.size),
+      panel.background = element_rect(fill = "white"),
+      axis.text.x = element_text(size = axis.text.x.size),
+      axis.text.y = element_text(size = axis.text.y.size),
+      panel.border = element_rect(linetype = "solid", fill = NA),
+      axis.title = element_text(size = axis.title.size),
+      legend.key.size = unit(legend.key.size, "pt"),
+      legend.text = element_text(size = legend.text.size),
+      # legend.title = element_text(size = 20, hjust = 0.5),
+      legend.position =legend.position,
+      legend.title = element_blank(),
+      legend.background = element_rect(fill = "white", color = "black"),# ...
+    ) +
+      # guides(color = "none") +
+      scale_color_manual(values = pattern.colors) +scale_fill_manual(values = fill.colors) +
+      xlab(paste("Radius (", unit, ")", sep = "")) + ylab(ylabs[[func]]) +
+      ggtitle(title)
+
+
+  }
+
+  #######
+
+  else {
+    print("start first")
+    baseline = envelopes[[1]][[rrl]]$mmean
+    if (raw) {
+      baseline = 0
+    }
+    long = data.frame("r" = c(),
+                      "mmean" = c(),
+                      "lo" = c(),
+                      "hi" = c(),
+                      "type" = c())
+
+    i <- 1
+    while (i <= length(envelopes)) {
+      temp <- envelopes[[i]][[rrl]]
+      temp$type <- names(pattern.colors)[i]
+      temp$lo = take_root(temp$lo) - take_root(baseline)
+      temp$hi = take_root(temp$hi) - take_root(baseline)
+      temp$mmean = take_root(temp$mmean) - take_root(baseline)
+      long <- rbind(long, temp)
+      i <- i + 1
+
+    }
+
+    #class(observed_funcs[[image_num]][[func]])
+    if (is.data.frame(observed_values)) {
+      observed <- data.frame(
+        r = observed_values[["r"]],
+
+        mmean = take_root(observed_values[[cor]]) - take_root(baseline),
+        lo = take_root(observed_values[[cor]]) - take_root(baseline),
+        hi = take_root(observed_values[[cor]]) - take_root(baseline),
+        type = "Observed"
+      )
+    }
+
+
+    else if (is.list(observed_values)) {
+      if (is.data.frame(observed_values[[1]])) {
+        observed = data.frame(row.names = c("r", "mmean", "lo", "hi", "type"))
+        obs = observed_values[[func]]
+        obs_01 <- data.frame(
+          r = obs$r,
+
+          mmean = take_root(obs[[cor]]) - take_root(baseline),
+          lo = take_root(obs[[cor]]) - take_root(baseline),
+          hi = take_root(obs[[cor]]) - take_root(baseline),
+          type = names(pattern.colors)[length(envelopes) + 1])
+        observed = rbind(observed, obs_01)
+      }
+
+      else if (is.list(observed_values[[1]])) {
+        observed = data.frame(row.names = c("r", "mmean", "lo", "hi", "type"))
+        for (i in 1:length(observed_values)) { #
+          obs = (observed_values[[i]][[func]])
+          obs_01 <- data.frame(
+            r = obs$r,
+
+            mmean = take_root(obs[[cor]]) - take_root(baseline),
+            lo = take_root(obs[[cor]]) - take_root(baseline),
+            hi = take_root(obs[[cor]]) - take_root(baseline),
+            type = names(pattern.colors)[length(envelopes) + i])
+          observed = rbind(observed, obs_01)
+        }
+      }
+
+
+    }
+
+    else {
+      stop("observed_values must be either dataframe or list of dataframes with a single summary function,
+             list of dataframes, each dataframe containing the same function,
+             or a list of list of dataframes, the outer list being the pattern, the inner list being the different summary functions")
+    }
+
+
+    long <- rbind(long, observed)
+
+    gplot <- long %>% ggplot2::ggplot(aes(
+      x = r, ymin = (lo) ,
+      ymax = (hi) , color = type, fill = type
+    )) +
+      geom_ribbon(alpha = alpha, linewidth = env_linewidth, linetype = env_linetype) +
+      geom_line(aes(x = r, y = lo, color = type, fill = type),
+                linewidth = linewidth, linetype = env_linetype,
+                data = filter(long, type == "Observed") ) +
+      geom_hline(yintercept = 0)# +
+    # geom_line(aes(x= r, y = sqrt(mmean) , color = type))
+
+
+    print("start plot")
+    gplot <- gplot + theme(
+      plot.title = element_text(hjust = 0.5, size = title.size),
+      panel.background = element_rect(fill = "white"),
+      axis.text.x = element_text(size = axis.text.x.size),
+      axis.text.y = element_text(size = axis.text.y.size),
+      panel.border = element_rect(linetype = "solid", fill = NA),
+      axis.title = element_text(size = axis.title.size),
+      legend.key.size = unit(legend.key.size, "pt"),
+      legend.text = element_text(size = legend.text.size),
+      # legend.title = element_text(size = 20, hjust = 0.5),
+      legend.position =legend.position,
+      legend.title = element_blank(),
+      legend.background = element_rect(fill = "white", color = "black"),# ...
+    ) +
+      # guides(color = "none") +
+      scale_color_manual(values = pattern.colors) + scale_fill_manual(values = fill.colors) +
+      xlab(paste("Radius (", unit, ")", sep = "")) + ylab(ylabs[[func]]) +
+      ggtitle(title)
+  }
+}
+
+
 #' Find Points
 #' @param OVER overlying point pattern
 findNearestPoints_dep <- function(OVER, UNDER, n = 1) {
