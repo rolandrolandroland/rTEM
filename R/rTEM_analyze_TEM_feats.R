@@ -3,7 +3,7 @@
 #' @description
 #' Takes a list of lists and converts to single wide matrix
 #' @export
-feat_list_to_wide = function(feats, names, col_names, feat_names) {
+feat_list_to_wide = function(feats, col_names, feat_names) {
   df = data.frame()
   for (i in 1:length(feats)) {
     for (j in 1:length(feats[[i]])) {
@@ -21,6 +21,7 @@ feat_list_to_wide = function(feats, names, col_names, feat_names) {
   colnames(df) = c(feat_names, names(col_names))
   df
 }
+
 
 #' Combine ranks
 #' @description
@@ -58,19 +59,19 @@ combine_rank = function(tall_data, feature_name, funcs = c("G", "K"), im = 1) {
 #' Get tall data from list of lists
 #' @export
 get_tall = function(iso_feats, vert_feats, feat_names,
-                    tall_names = names, all_funcs = all_funcs
+                    tall_names, funcs
 ) {
 
   vert_c_names = list("image_num" = 1:length(vert_feats),
                       "combo_num" = 1:length(vert_feats[[1]]),
-                      "func" = all_funcs)
+                      "func" = funcs)
 
-  vert_wide = feat_list_to_wide(vert_feats, tall_names, vert_c_names, feat_names)
+  vert_wide = feat_list_to_wide(vert_feats, vert_c_names, feat_names)
 
   iso_c_names = list("image_num" = 1:length(iso_feats),
                      "combo_num" = 1:length(iso_feats[[1]]),
-                     "func" = all_funcs)
-  iso_wide = feat_list_to_wide(iso_feats, tall_names, iso_c_names, feat_names)
+                     "func" = funcs)
+  iso_wide = feat_list_to_wide(iso_feats, iso_c_names, feat_names)
 
 
   iso_tall = pivot_longer(iso_wide, feat_names,  names_to = "feat_name", values_to = "value")
@@ -89,7 +90,7 @@ get_tall = function(iso_feats, vert_feats, feat_names,
 
 #' Get and save ordered tables for feature values of functions
 #' @export
-get_tables = function(all_tall, func_groups, feature_name, name_image, image_num, path) {
+get_tables = function(all_tall, func_groups, size_fracs, feature_name, name_image, image_num, path) {
   ranks = lapply(1:length(func_groups), function(i) {
     ranks = combine_rank(all_tall, feature_name = feature_to_use, funcs = func_groups[[i]], im = image_num)
     ranks_sorted = ranks %>% arrange((score))

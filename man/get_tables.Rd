@@ -4,7 +4,15 @@
 \alias{get_tables}
 \title{Get and save ordered tables for feature values of functions}
 \usage{
-get_tables(all_tall, func_groups, feature_name, name_image, image_num, path)
+get_tables(
+  all_tall,
+  func_groups,
+  size_fracs,
+  feature_name,
+  name_image,
+  image_num,
+  path
+)
 }
 \description{
 Get and save ordered tables for feature values of functions

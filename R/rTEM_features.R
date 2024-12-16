@@ -123,7 +123,7 @@ get_features = function(expected, simulated,
                         funcs = c("G", "K", "F"),
                         features = list(c("max_diff", "min_diff",
                                           "total_norm_diff", "total_norm_diff_squared",
-                                          "total_diff", "net_diff",
+                                          "total_diff", "total_squared_diff", "net_diff",
                                           "max_diff_envelope", "min_diff_envelope",
                                           "total_diff_envelope", "net_diff_envelope",
                                           "T_final", "T_final_ratio")),
@@ -200,6 +200,9 @@ get_features = function(expected, simulated,
 
     if ("total_diff" %in% feats) {
       total_diff = sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))) * dr
+    }
+    if ("total_squared_diff" %in% feats) {
+      total_squared_diff = sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))^2) * dr
     }
     if ("net_diff" %in% feats) {
       net_diff = sum(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]])) * dr

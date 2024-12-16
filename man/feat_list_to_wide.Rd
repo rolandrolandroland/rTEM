@@ -4,7 +4,7 @@
 \alias{feat_list_to_wide}
 \title{Convert list of features to wide format}
 \usage{
-feat_list_to_wide(feats, names, col_names, feat_names)
+feat_list_to_wide(feats, col_names, feat_names)
 }
 \arguments{
 \item{feats}{vector of feats}

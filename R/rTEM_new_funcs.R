@@ -1,3 +1,56 @@
+#' Preprocess UPP data (developement version)
+#'
+#' @export
+UPP_preprocess_dev = function(upp, guest_pattern,
+                              min_thick = NA, max_thick = NA,
+                              intensity_upp = 1, n_guests = NA) {
+  if (is.na(max_thick)) {
+    max_thick = max(upp$domain$zrange)
+  }
+  if (is.na(min_thick)) {
+    min_thick = min(upp$domain$zrange)
+  }
+  # case 1 guest pattern 2d, UPP pattern is 3d,
+  if (is.ppp(guest_pattern)) {
+    ## how many points are needed?
+    if (is.pp3(upp)) {
+      upp = rescale_pattern(upp, intensity_upp)
+      size = c(diff(guest_pattern$window$xrange), diff(guest_pattern$window$yrange), diff(guest_pattern$window$zrange), (max_thick - min_thick))
+      upp = stitch.size(upp, boxSize = size)
+      ## translate
+      xdif = upp$domain$xrange[1] - guest_pattern$window$xrange[1]
+      ydif = upp$domain$yrange[1] - guest_pattern$window$yrange[1]
+      upp = pp3(x = upp$data$x - xdif, y = upp$data$y - ydif, z = upp$data$z,
+                owin = c(guest_pattern$window$xrange, guest_pattern$window$yrange, upp$domain$zrange))
+    }
+    # case 2  guest pattern 2d, UPP is 2d
+    else if (is.ppp(upp)) {
+      upp = rescale_pattern(upp, intensity_upp)
+      size = c(diff(guest_pattern$window$xrange), diff(guest_pattern$window$yrange), diff(guest_pattern$window$zrange))
+      upp = stitch.size(upp, boxSize = size)
+      xdif = upp$domain$xrange[1] - guest_pattern$window$xrange[1]
+      ydif = upp$domain$yrange[1] - guest_pattern$window$yrange[1]
+      upp = ppp(x = upp$data$x - xdif, y = upp$data$y - ydif,
+                owin = c(guest_pattern$window$xrange, guest_pattern$window$yrange))
+    }
+  }
+
+
+  # case 3: guest_pattern is 3d and upp is 3d
+  if (is.pp3(guest_pattern)) {
+    upp = rescale_pattern(upp, intensity_upp)
+    size = c(diff(guest_pattern$domain$xrange), diff(guest_pattern$domain$yrange), diff(guest_pattern$domain$zrange))
+    upp = stitch.size(upp, boxSize = size)
+    ## translate
+    xdif = upp$domain$xrange[1] - guest_pattern$domain$xrange[1]
+    ydif = upp$domain$yrange[1] - guest_pattern$domain$yrange[1]
+    upp = pp3(x = upp$data$x - xdif, y = upp$data$y - ydif, z = upp$data$z,
+              as.box3(c(guest_pattern$domain$xrange, guest_pattern$domain$yrange, guest_pattern$domain$zrange)))
+  }
+  return(upp)
+}
+
+
 #' Preprocess UPP data
 #'
 #' @export
@@ -46,6 +99,58 @@ UPP_preprocess = function(upp, guest_pattern,
     ydif = upp$domain$yrange[1] - guest_pattern$window$yrange[1]
     upp = pp3(x = upp$data$x - xdif, y = upp$data$y - ydif, z = upp$data$z,
               owin = c(guest_pattern$window$xrange, guest_pattern$window$yrange, upp$domain$zrange))
+  }
+  return(upp)
+}
+
+#' Preprocess UPP data
+#'
+#' @export
+UPP_preprocess_dev = function(upp, guest_pattern,
+                          min_thick = NA, max_thick = NA,
+                          intensity_upp = 1, n_guests = NA) {
+  if (is.na(max_thick)) {
+    max_thick = max(upp$domain$zrange)
+  }
+  if (is.na(min_thick)) {
+    min_thick = min(upp$domain$zrange)
+  }
+  # case 1 guest pattern 2d, UPP pattern is 3d,
+  if (is.ppp(guest_pattern)) {
+    ## how many points are needed?
+    if (is.pp3(upp)) {
+      upp = rescale_pattern(upp, intensity_upp)
+      size = c(diff(guest_pattern$window$xrange), diff(guest_pattern$window$yrange), diff(guest_pattern$window$zrange), (max_thick - min_thick))
+      upp = stitch.size(upp, boxSize = size)
+      ## translate
+      xdif = upp$domain$xrange[1] - guest_pattern$window$xrange[1]
+      ydif = upp$domain$yrange[1] - guest_pattern$window$yrange[1]
+      upp = pp3(x = upp$data$x - xdif, y = upp$data$y - ydif, z = upp$data$z,
+                owin = c(guest_pattern$window$xrange, guest_pattern$window$yrange, upp$domain$zrange))
+    }
+    # case 2  guest pattern 2d, UPP is 2d
+    else if (is.ppp(upp)) {
+      upp = rescale_pattern(upp, intensity_upp)
+      size = c(diff(guest_pattern$window$xrange), diff(guest_pattern$window$yrange), diff(guest_pattern$window$zrange))
+      upp = stitch.size(upp, boxSize = size)
+      xdif = upp$domain$xrange[1] - guest_pattern$window$xrange[1]
+      ydif = upp$domain$yrange[1] - guest_pattern$window$yrange[1]
+      upp = ppp(x = upp$data$x - xdif, y = upp$data$y - ydif,
+                owin = c(guest_pattern$window$xrange, guest_pattern$window$yrange))
+    }
+  }
+
+
+  # case 3: guest_pattern is 3d and upp is 3d
+  if (is.pp3(guest_pattern)) {
+    upp = rescale_pattern(upp, intensity_upp)
+    size = c(diff(guest_pattern$domain$xrange), diff(guest_pattern$domain$yrange), diff(guest_pattern$domain$zrange))
+    upp = stitch.size(upp, boxSize = size)
+    ## translate
+    xdif = upp$domain$xrange[1] - guest_pattern$domain$xrange[1]
+    ydif = upp$domain$yrange[1] - guest_pattern$domain$yrange[1]
+    upp = pp3(x = upp$data$x - xdif, y = upp$data$y - ydif, z = upp$data$z,
+              as.box3(c(guest_pattern$domain$xrange, guest_pattern$domain$yrange, guest_pattern$domain$zrange)))
   }
   return(upp)
 }

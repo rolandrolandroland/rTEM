@@ -4,13 +4,7 @@
 \alias{get_tall}
 \title{Get tall data from list of lists}
 \usage{
-get_tall(
-  iso_feats,
-  vert_feats,
-  feat_names,
-  tall_names = names,
-  all_funcs = all_funcs
-)
+get_tall(iso_feats, vert_feats, feat_names, tall_names, funcs)
 }
 \description{
 Get tall data from list of lists
