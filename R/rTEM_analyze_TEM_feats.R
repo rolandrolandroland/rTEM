@@ -92,7 +92,7 @@ get_tall = function(iso_feats, vert_feats, feat_names,
 #' @export
 get_tables = function(all_tall, func_groups, size_fracs, feature_name, name_image, image_num, path) {
   ranks = lapply(1:length(func_groups), function(i) {
-    ranks = combine_rank(all_tall, feature_name = feature_to_use, funcs = func_groups[[i]], im = image_num)
+    ranks = combine_rank(all_tall, feature_name = feature_name, funcs = func_groups[[i]], im = image_num)
     ranks_sorted = ranks %>% arrange((score))
     cbind(size_fracs[as.numeric(ranks_sorted$combo_num),], ranks_sorted$zweight)[1:rows_to_print,]
   })
