@@ -1,3 +1,184 @@
+#' Get Features deprecated Dec 19 2024
+#' @param expected a list of summary functions for the observed value
+#' @param simulated a list of
+#' @param funcs list of summary functions to get features for.  currently `G`, `K`, and `F` are supported
+#' @param features a list.  Must be either length 1 or same length as `funcs` parameter
+#'  @description deprecated because the normalize total difference needed to only sum
+#'  non zero env width
+#'
+get_features_deprecated = function(expected, simulated,
+                        funcs = c("G", "K", "F"),
+                        features = list(c("max_diff", "min_diff",
+                                          "total_norm_diff", "total_norm_diff_squared",
+                                          "total_diff", "total_squared_diff", "net_diff",
+                                          "max_diff_envelope", "min_diff_envelope",
+                                          "total_diff_envelope", "net_diff_envelope",
+                                          "T_final", "T_final_ratio")),
+                        simulated_outer_name = "rrl_",
+                        simulated_inner_name = c("r", "mmean", "lo", "hi"),
+                        expected_inner_name = c(),
+                        sqrt = "K",
+                        K_cor = "trans", G_cor = "km", G2_cor = "km",
+                        G3_cor = "km", G4_cor = "km",
+                        F_cor = "km", GXGH_cor = "km", GXHG_cor = "km")
+
+{
+
+  for (i in 3:10) {
+    nm =paste("G", i, sep = "")
+    if (any(funcs == nm)) {
+      assign(paste("G", i, "_cor", sep=""), G2_cor)
+    }
+  }
+  ## if features is only of length 1 and funcs is longer, then calculate all features in features[[1]] for each function
+  if (length(features) == 1 ) {
+    features = lapply(1:length(funcs), function(i) {
+      features[[1]]
+    })
+  }
+
+  ## now make sure funcs and features are the same length
+  else if (length(fucs) != length(features)) {
+    stop("ERROR:  `features` must be a list of either length 1 or same length as `funcs`")
+  }
+
+  out = lapply(1:length(funcs), function(i) {
+
+    func = funcs[i]
+    if ((sqrt == "all") || (sqrt == "K" && func == "K")) {
+      take_root = function(vector) {
+        return(sqrt(vector))
+      }
+    }
+
+    # if not, just return the original vector
+    else {
+      take_root = function(vector) {
+        return(vector)
+      }
+    }
+    current_env = environment()
+    feats = features[[i]]
+    cor = paste(func, "_cor", sep = "")
+    cor = get(cor)#, envir= environment())
+    dr = expected[[func]]$r[2] - expected[[func]]$r[1]
+
+    rrl = paste(simulated_outer_name, func, sep = "")
+    env_width =  (take_root(simulated[[rrl]][, simulated_inner_name[4]]) -  take_root(simulated[[rrl]][, simulated_inner_name[3]])) / 2
+
+    if ("max_diff" %in% feats) {
+      max_diff = max(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))
+
+    }
+
+    if ("min_diff" %in% feats) {
+      min_diff = min(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))
+    }
+
+    if ("total_norm_diff" %in% feats) {
+      total_norm_diff =sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]])) /env_width, na.rm = TRUE) *dr
+    }
+
+    if ("total_norm_diff_squared" %in% feats) {
+
+      total_norm_diff_squared = sum(abs((take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))/env_width)^2, na.rm = TRUE ) * dr
+    }
+
+
+    if ("total_diff" %in% feats) {
+      total_diff = sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))) * dr
+    }
+    if ("total_squared_diff" %in% feats) {
+      total_squared_diff = sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))^2) * dr
+    }
+    if ("net_diff" %in% feats) {
+      net_diff = sum(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]])) * dr
+    }
+    if ("max_diff_envelope" %in% feats) {
+      lo_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[3]])
+      lo_diff[lo_diff > 0] = 0
+      hi_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[4]])
+      hi_diff[hi_diff < 0] = 0
+      # to see how much it falls outside the envelope, we must take the smaller of the distances to each envelope end
+      diffs = cbind(lo_diff, hi_diff)
+      diffs = apply(diffs, 1, function(x) {
+        x[which.max(abs(x))] })
+      max_diff_envelope = max(diffs)
+    }
+    #plot(simulated[[rrl]]$r, diffs)
+    if ("min_diff_envelope" %in% feats) {
+      lo_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[3]])
+      lo_diff[lo_diff > 0] = 0
+      hi_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[4]])
+      hi_diff[hi_diff < 0] = 0
+      # to see how much it falls outside the envelope, we must take the smaller of the distances to each envelope end
+      diffs = cbind(lo_diff, hi_diff)
+      diffs = apply(diffs, 1, function(x) {
+        x[which.max(abs(x))] })
+      min_diff_envelope = max(diffs)
+    }
+
+    if ("total_diff_envelope" %in% feats) {
+      lo_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[3]])
+      lo_diff[lo_diff > 0] = 0
+      hi_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[4]])
+      hi_diff[hi_diff < 0] = 0
+      # to see how much it falls outside the envelope, we must take the smaller of the distances to each envelope end
+      diffs = cbind(lo_diff, hi_diff)
+      diffs = apply(diffs, 1, function(x) {
+        x[which.max(abs(x))] })
+      total_diff_envelope = sum(abs(diffs))*dr
+    }
+
+    if ("net_diff_envelope" %in% feats) {
+      lo_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[3]])
+      lo_diff[lo_diff > 0] = 0
+      hi_diff = take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][, simulated_inner_name[4]])
+      hi_diff[hi_diff < 0] = 0
+      # to see how much it falls outside the envelope, we must take the smaller of the distances to each envelope end
+      diffs = cbind(lo_diff, hi_diff)
+      diffs = apply(diffs, 1, function(x) {
+        x[which.max(abs(x))] })
+      net_diff_envelope = sum((diffs))*dr
+    }
+    if ("T_final" %in% feats) {
+      t = calc_T_val_observed(observed = expected, expected =simulated, r = NULL,
+                              func = func, rmin = 0, rmax = NA,
+                              sqrt = sqrt,
+                              c(NA, "cor_name"), expect_name = c("rrl_", "mmean"))
+      T_final = max(t$T)
+
+    }
+
+    if ("T_final_ratio" %in% feats) {
+      t_obs = calc_T_val_observed(observed = expected, expected =simulated, r = NULL,
+                                  func = func, rmin = 0, rmax = NA,
+                                  sqrt = sqrt,
+                                  c(NA, "cor_name"), expect_name = c("rrl_", "mmean"))
+      t_obs = max(t_obs$T)
+      t_hi = calc_T_val_observed(observed = expected, expected =simulated[[rrl]]$hi, r = NULL,
+                                 func = func, rmin = 0, rmax = NA,
+                                 sqrt = sqrt,
+                                 c(NA, "cor_name"), expect_name = c("rrl_", "mmean"))
+      t_hi = max(t_hi$T)
+      t_lo = calc_T_val_observed(observed = expected, expected =simulated[[rrl]]$lo, r = NULL,
+                                 func = func, rmin = 0, rmax = NA,
+                                 sqrt = sqrt,
+                                 c(NA, "cor_name"), expect_name = c("rrl_", "mmean"))
+      t_lo = max(t_lo$T)
+      t_sim = max(c(t_hi, t_lo))
+      T_final_ratio = t_obs/t_sim
+
+    }
+    #put them all together
+    vals = sapply(feats, get, envir = environment())
+    vals
+  })
+  names(out) = funcs
+  return(out)
+}
+
+
 #' Plot summary functions (deprecated 240911)
 #' @param envelopes a list envelope values found by
 #' function such as   \code{\link{calc_summary_funcs}}.  Should be list of length equal

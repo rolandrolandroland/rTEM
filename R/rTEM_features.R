@@ -178,6 +178,7 @@ get_features = function(expected, simulated,
 
     rrl = paste(simulated_outer_name, func, sep = "")
     env_width =  (take_root(simulated[[rrl]][, simulated_inner_name[4]]) -  take_root(simulated[[rrl]][, simulated_inner_name[3]])) / 2
+    inds = (env_width != 0)
 
     if ("max_diff" %in% feats) {
       max_diff = max(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))
@@ -189,12 +190,15 @@ get_features = function(expected, simulated,
     }
 
     if ("total_norm_diff" %in% feats) {
-      total_norm_diff =sum(abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]])) /env_width, na.rm = TRUE) *dr
+      val = abs(take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]])) /env_width
+      total_norm_diff = sum(val[inds]) *dr
     }
 
     if ("total_norm_diff_squared" %in% feats) {
 
-      total_norm_diff_squared = sum(abs((take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))/env_width)^2, na.rm = TRUE ) * dr
+      val = abs((take_root(expected[[func]][[cor]]) - take_root(simulated[[rrl]][,simulated_inner_name[2]]))/env_width)^2
+      total_norm_diff_squared = sum(val[inds]) *dr
+
     }
 
 
