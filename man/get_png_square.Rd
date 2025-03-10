@@ -8,10 +8,19 @@ get_png_square(
   input_path,
   save_path,
   pat,
+  observed_pat = NA,
+  row_file_names,
   to_name,
   y_space = 50,
   x_space = 50,
-  resolution = 70
+  resolution = 70,
+  scale_image_by = 1,
+  ind_order = c(5, 2, 3, 1),
+  f_ind = 1,
+  g_ind = 2,
+  g2_ind = 3,
+  g3_ind = 4,
+  k_ind = 5
 )
 }
 \description{

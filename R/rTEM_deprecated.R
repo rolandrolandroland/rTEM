@@ -1,3 +1,86 @@
+#' assemble png files into a png square deprecated Dec 20 2024
+get_png_square_deprecated = function(input_path, save_path, pat, to_name, y_space = 50, x_space = 50, resolution = 70) {
+  # Load PNG images
+
+  path = paste(input_path, "mixed", sep = "/")
+
+  mixed_files <- list.files(path = path, pattern = pat, full.names = TRUE)
+
+  path = paste(input_path, "iso_dimer", sep = "/")
+  iso_files <- list.files(path = path, pattern = pat, full.names = TRUE)
+
+  path = paste(input_path, "vert_dimer", sep = "/")
+  vert_files <- list.files(path = path, pattern = pat, full.names = TRUE)
+
+  path = paste(input_path, "observed", sep = "/")
+  observed_files = list.files(path = path, full.names = TRUE)
+
+  mixed_images = lapply(mixed_files, readPNG)
+  iso_images = lapply(iso_files, readPNG)
+  vert_images = lapply(vert_files, readPNG)
+  observed_images = lapply(observed_files, readPNG)
+
+  f_ind = 1
+  g_ind = 2
+  g2_ind = 3
+  g3_ind = 4
+  k_ind = 5
+
+
+  # Set space between images (in pixels)
+  total_height = dim(observed_images[[k_ind]])[1] + dim(mixed_images[[k_ind]])[1] +
+    dim(vert_images[[k_ind]])[1] + dim(iso_images[[k_ind]])[1] + (y_space * (ln -1))
+  # Get total height and max width for the stacked image (including spaces between images)
+  total_width = dim(iso_images[[k_ind]])[2] + dim(iso_images[[g_ind]])[2] +
+    dim(iso_images[[g2_ind]])[2] + dim(iso_images[[f_ind]])[2] + (x_space * (3))
+
+
+  # Open a PNG device with dimensions based on the total height and width
+  # Adjust resolution with the `res` argument (e.g., 300 for high-resolution output)
+  #png("stacked_tables.png", width = max_width, height = total_height, res = 72)
+  png(paste(save_path, to_name, ".png", sep = ""), width = total_width , height = total_height, res = resolution)
+
+  # Set up an empty plot with the right dimensions
+  plot(NA, xlim = c(0, total_width), ylim = c(0, total_height), type = "n", xaxt = "n", yaxt = "n", bty = "n", xaxs = "i", yaxs = "i")
+
+  # Initialize y_offset at the top (since plotting in R starts from bottom-left corner)
+  #y_offset <- total_height
+  y_offset = 0
+  x_offset =0
+  #x_offset = total_width
+  ind_order = c(k_ind, g_ind, g2_ind, f_ind)
+
+  images_to_use = c(observed_images[ind_order], iso_images[ind_order],
+                    vert_images[ind_order], mixed_images[ind_order])
+  list_images  = list(observed_images[ind_order], iso_images[ind_order],
+                      vert_images[ind_order], mixed_images[ind_order])
+  list_images = list(mixed_images[ind_order], vert_images[ind_order],
+                     iso_images[ind_order], observed_images[ind_order])
+
+  # Loop through the images and place them one after the other with space in between
+  for (r in 1:length(list_images)) {
+    x_offset = 0
+    for (c in 1:length(ind_order)) {
+      img_height = dim(list_images[[r]][[c]])[1]
+      img_width = dim(list_images[[r]][[c]])[2]
+      #y_offset <- y_offset - img_height
+      #x_offset = x_offset - img_width
+      rasterImage(list_images[[r]][[c]], x_offset, y_offset,
+                  img_width + x_offset,
+                  img_height + y_offset)
+      x_offset = x_offset + x_space + img_width
+    }
+    y_offset = y_offset + y_space + img_height
+
+  }
+  dev.off()
+
+}
+
+
+
+
+
 #' Get Features deprecated Dec 19 2024
 #' @param expected a list of summary functions for the observed value
 #' @param simulated a list of

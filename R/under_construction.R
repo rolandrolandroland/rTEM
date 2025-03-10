@@ -542,7 +542,7 @@ multimersim_dev = function(guest_pattern = NULL, upp, output = "guest pattern ty
     }
 
     # rescale UPP pattern to match physical system (1 point per nm)
-    upp_scaled = rTEM::rescale_pattern(upp, intensity_upp)
+    upp = rTEM::rescale_pattern(upp, intensity_upp)
   }
   else {
     # upp_scaled = upp
@@ -680,7 +680,7 @@ multimersim_dev = function(guest_pattern = NULL, upp, output = "guest pattern ty
       print("Case 2: Multimers will be generated in 2D UPP for 2D output")
 
       # subset so that it is now only includes the points in the xy range of the TEM points and z range of thickness
-      upp_box = subset(upp_scaled, x >= box_2d$xrange[1] & x <= box_2d$xrange[2] &
+      upp_box = subset(upp, x >= box_2d$xrange[1] & x <= box_2d$xrange[2] &
                          y >= box_2d$yrange[1] & y <= box_2d$yrange[2])
 
       ## label n/2 points as guest and the rest as host
@@ -762,7 +762,7 @@ multimersim_dev = function(guest_pattern = NULL, upp, output = "guest pattern ty
   else if (spatstat.geom::is.pp3(guest_pattern) || output == "pp3") {
     print("Case 3:  Multimers will be generated in 3D for 3D output")
     if (is.null(guest_pattern)) {
-      box_3d = domain(upp_scaled)
+      box_3d = domain(upp)
     }
 
     else {
@@ -781,7 +781,7 @@ multimersim_dev = function(guest_pattern = NULL, upp, output = "guest pattern ty
 
 
     # subset so that it is now only includes the points in the xy range of the TEM points and z range of thickness
-    upp_box = subset(upp_scaled, x >= box_3d$xrange[1] & x <= box_3d$xrange[2] &
+    upp_box = subset(upp, x >= box_3d$xrange[1] & x <= box_3d$xrange[2] &
                        y >= box_3d$yrange[1] & y <= box_3d$yrange[2] &
                        z >=min_thick& z <= max_thick)
 
@@ -869,8 +869,6 @@ multimersim_dev = function(guest_pattern = NULL, upp, output = "guest pattern ty
 
   }
 }
-
-
 
 
 #' Plot summary functions (developement version)

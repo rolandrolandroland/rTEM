@@ -217,41 +217,45 @@ stack_png_to_png = function(input_path, save_path, to_name, y_space = 50, resolu
 
 #' assemble png files into a png square
 #' @export
-get_png_square = function(input_path, save_path, pat, to_name, y_space = 50, x_space = 50, resolution = 70) {
+get_png_square = function(input_path, save_path, pat, observed_pat = NA,
+                          row_file_names,
+                          to_name, y_space = 50, x_space = 50, resolution = 70,
+                          scale_image_by = 1,
+                          ind_order = c(5, 2, 3, 1),
+                          f_ind = 1,
+                          g_ind = 2,
+                          g2_ind = 3,
+                          g3_ind = 4,
+                          k_ind = 5) {
+  y_space = y_space * scale_image_by
+  x_space = x_space * scale_image_by
   # Load PNG images
+  all_images =lapply(row_file_names, function(name) {
+    if (name == "observed" & !is.na(observed_pat)) {
+      path = paste(input_path, name, sep = "/")
+      files = list.files(path = path, pattern = observed_pat, full.names = TRUE)
+      #print(files)
+      images = lapply(files, readPNG)
+    }
+    else {
+      path = paste(input_path, name, sep = "/")
+      files = list.files(path = path, pattern = pat, full.names = TRUE)
+      #print(files)
+      images = lapply(files, readPNG)
+    }
 
-  path = paste(input_path, "mixed", sep = "/")
-
-  mixed_files <- list.files(path = path, pattern = pat, full.names = TRUE)
-
-  path = paste(input_path, "iso_dimer", sep = "/")
-  iso_files <- list.files(path = path, pattern = pat, full.names = TRUE)
-
-  path = paste(input_path, "vert_dimer", sep = "/")
-  vert_files <- list.files(path = path, pattern = pat, full.names = TRUE)
-
-  path = paste(input_path, "observed", sep = "/")
-  observed_files = list.files(path = path, full.names = TRUE)
-
-  mixed_images = lapply(mixed_files, readPNG)
-  iso_images = lapply(iso_files, readPNG)
-  vert_images = lapply(vert_files, readPNG)
-  observed_images = lapply(observed_files, readPNG)
-
-  f_ind = 1
-  g_ind = 2
-  g2_ind = 3
-  g3_ind = 4
-  k_ind = 5
-
+  })
 
   # Set space between images (in pixels)
-  total_height = dim(observed_images[[k_ind]])[1] + dim(mixed_images[[k_ind]])[1] +
-    dim(vert_images[[k_ind]])[1] + dim(iso_images[[k_ind]])[1] + (y_space * (ln -1))
+  total_height =(dim(all_images[[1]][[k_ind]])[1] + dim(all_images[[2]][[k_ind]])[1] +
+                   dim(all_images[[3]][[k_ind]])[1] + dim(all_images[[4]][[k_ind]])[1] + (y_space * (ln -1))) *scale_image_by
   # Get total height and max width for the stacked image (including spaces between images)
-  total_width = dim(iso_images[[k_ind]])[2] + dim(iso_images[[g_ind]])[2] +
-    dim(iso_images[[g2_ind]])[2] + dim(iso_images[[f_ind]])[2] + (x_space * (3))
-
+  total_width = (dim(all_images[[1]][[k_ind]])[2] + dim(all_images[[1]][[g_ind]])[2] +
+                   dim(all_images[[1]][[g2_ind]])[2] + dim(all_images[[4]][[f_ind]])[2] + (x_space * (3))) *scale_image_by
+  widths = sapply(1:length(ind_order), function(i) {
+    dim(all_images[[1]][[ind_order[i]]])[2]
+  })
+  total_width = (sum(widths) * scale_image_by) + (x_space * (length(widths) + 1))
 
   # Open a PNG device with dimensions based on the total height and width
   # Adjust resolution with the `res` argument (e.g., 300 for high-resolution output)
@@ -266,21 +270,16 @@ get_png_square = function(input_path, save_path, pat, to_name, y_space = 50, x_s
   y_offset = 0
   x_offset =0
   #x_offset = total_width
-  ind_order = c(k_ind, g_ind, g2_ind, f_ind)
-
-  images_to_use = c(observed_images[ind_order], iso_images[ind_order],
-                    vert_images[ind_order], mixed_images[ind_order])
-  list_images  = list(observed_images[ind_order], iso_images[ind_order],
-                      vert_images[ind_order], mixed_images[ind_order])
-  list_images = list(mixed_images[ind_order], vert_images[ind_order],
-                     iso_images[ind_order], observed_images[ind_order])
+  list_images = lapply(all_images, function(i) {
+    i[ind_order]
+  })
 
   # Loop through the images and place them one after the other with space in between
   for (r in 1:length(list_images)) {
     x_offset = 0
     for (c in 1:length(ind_order)) {
-      img_height = dim(list_images[[r]][[c]])[1]
-      img_width = dim(list_images[[r]][[c]])[2]
+      img_height = dim(list_images[[r]][[c]])[1] *scale_image_by
+      img_width = dim(list_images[[r]][[c]])[2] * scale_image_by
       #y_offset <- y_offset - img_height
       #x_offset = x_offset - img_width
       rasterImage(list_images[[r]][[c]], x_offset, y_offset,
@@ -294,6 +293,3 @@ get_png_square = function(input_path, save_path, pat, to_name, y_space = 50, x_s
   dev.off()
 
 }
-
-
-
