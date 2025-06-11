@@ -91,6 +91,7 @@ integrated_sq_dev = function(x, mu, r) {
 #' @param funcs vector of summary functions
 #' @param r_values radius values corresponding to each observed and expected matrix
 #' @param n_relabs number of relabelings
+#' @export
 get_power_val = function(expected, observed, thresh_val = .95, funcs = c("G", "K"), r_vals, n_relabs) {
   sapply(funcs, function(func) {
     train = observed[[func]]
