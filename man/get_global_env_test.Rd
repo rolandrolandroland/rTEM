@@ -4,7 +4,7 @@
 \alias{get_global_env_test}
 \title{Global envelope test for list of list of curves}
 \usage{
-get_global_env_test(expected, observed, funcs, type, r_vals)
+get_global_env_test(expected, observed, funcs, type, r_vals, sim_inds)
 }
 \arguments{
 \item{expected}{list of matrices expected curve values.  Format: `expected[[func]]`

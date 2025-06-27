@@ -5,13 +5,13 @@
 #' @param ind index (column number) of which obs_mat curve will be set as observed
 #' @details This function takes an observed and a simulated matrix and uses the curve_set function to turn it into a curve object to then be used in the global_envelope_test function
 #' @export
-make_curve_set <- function(obs_mat, sim_mat, r_vals, ind){
+make_curve_set <- function(obs_mat, sim_mat, r_vals, obs_ind, sim_inds = 1:ncol(sim_inds)){
   stopifnot(nrow(obs_mat)==length(r_vals),
             nrow(sim_mat)==length(r_vals))
   # ***pick ONE observed curve*** or an aggregate
-  obs_vec <- obs_mat[,ind]           # e.g. 1st replicate
+  obs_vec <- obs_mat[,obs_ind]           # e.g. 1st replicate
   curve_set(obs = obs_vec,
-            sim = sim_mat,
+            sim = sim_mat[,sim_inds],
             r   = r_vals)
 }
 
@@ -22,12 +22,12 @@ make_curve_set <- function(obs_mat, sim_mat, r_vals, ind){
 #' @details This function takes an observed matrix and uses the curve_set function to turn it into a
 #' curve object to then be used in the global_envelope_test function
 #' @export
-make_curve_set_expected = function(sim_mat, r_vals, ind){
+make_curve_set_expected = function(sim_mat, r_vals, obs_ind, sim_inds = 1:ncol(sim_mat)){
   stopifnot(nrow(sim_mat)==length(r_vals))
   # ***pick ONE observed curve*** or an aggregate
-  obs_vec <- sim_mat[,ind]           # e.g. 1st replicate
+  obs_vec <- sim_mat[,obs_ind]           # e.g. 1st replicate
   curve_set(obs = obs_vec,
-            sim = sim_mat[,-ind, drop = FALSE],
+            sim = sim_mat[,sim_inds][,-obs_ind, drop = FALSE],
             r   = r_vals)
 }
 
@@ -40,14 +40,15 @@ make_curve_set_expected = function(sim_mat, r_vals, ind){
 #' @param r_vals vector of length n values corresponding to radius (or other value) for each obs_mat and sim_mat curves
 #' @export
 get_global_env_test = function(expected, observed,
-                               funcs, type, r_vals) {
+                               funcs, type, r_vals, sim_inds) {
 
   relab_set = lapply(1:ncol(observed[[1]]), function(relab) {
     curves = lapply(funcs, function(func) {
       make_curve_set(observed[[func]],
                      expected[[func]],
                      r_vals,
-                     relab)
+                     relab,
+                     sim_inds = sim_inds)
     })
     res = global_envelope_test(curves,
                                type = type)
@@ -63,12 +64,13 @@ get_global_env_test = function(expected, observed,
 #' @param r_vals vector of length n values corresponding to radius (or other value) for each obs_mat and sim_mat curves
 #' @export
 get_global_env_test_expected = function(expected, funcs,
-                                        type, r_vals) {
+                                        type, r_vals, sim_inds) {
   relab_set = lapply(1:ncol(expected[[1]]), function(relab) {
     curves = lapply(funcs, function(func) {
       make_curve_set_expected(expected[[func]],
                               r_vals,
-                              relab)
+                              relab,
+                              sim_inds = sim_inds)
     })
     res = global_envelope_test(curves,
                                type = type)

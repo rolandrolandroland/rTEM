@@ -4,14 +4,14 @@
 \alias{make_curve_set_expected}
 \title{Make curve set for observed data only}
 \usage{
-make_curve_set_expected(sim_mat, r_vals, ind)
+make_curve_set_expected(sim_mat, r_vals, obs_ind, sim_inds = 1:ncol(sim_mat))
 }
 \arguments{
 \item{r_vals}{vector of length n values corresponding to radius (or other value) for each obs_mat curve}
 
-\item{ind}{index (column number) of which obs_mat curve will be set as observed}
-
 \item{obs_mat}{n x m matrix of m curves each of length n}
+
+\item{ind}{index (column number) of which obs_mat curve will be set as observed}
 }
 \description{
 Make curve set for observed data only

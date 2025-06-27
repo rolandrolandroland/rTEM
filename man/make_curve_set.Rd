@@ -4,7 +4,7 @@
 \alias{make_curve_set}
 \title{Make curve set for observed and simulated data}
 \usage{
-make_curve_set(obs_mat, sim_mat, r_vals, ind)
+make_curve_set(obs_mat, sim_mat, r_vals, obs_ind, sim_inds = 1:ncol(sim_inds))
 }
 \arguments{
 \item{obs_mat}{n x m matrix of m curves each of length n}
