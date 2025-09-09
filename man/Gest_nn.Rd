@@ -18,7 +18,7 @@ Gest_nn(
 \item{X}{The observed point pattern, 
     from which an estimate of \eqn{G(r)} will be computed.
     An object of class \code{ppp}, or data
-    in any format acceptable to \code{\link{as.ppp}()}.
+    in any format acceptable to \code{\link[spatstat.geom]{as.ppp}()}.
   }
 
 \item{r}{Optional. Numeric vector. The values of the argument \eqn{r}

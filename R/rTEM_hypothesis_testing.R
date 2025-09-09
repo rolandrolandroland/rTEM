@@ -94,7 +94,47 @@ integrated_sq_dev = function(x, mu, r) {
 #' @param r_values radius values corresponding to each observed and expected matrix
 #' @param n_relabs number of relabelings
 #' @export
-get_power_val = function(expected, observed, thresh_val = .95, funcs = c("G", "K"), r_vals, n_relabs) {
+get_power_val = function(expected, observed, thresh_val = .95, funcs = c("G", "K"), r_vals, n_relabs, dat_form = "matrix") {
+  sapply(funcs, function(func) {
+    if (dat_form == "matrix" | !is.list(observed)) {
+      train = observed[[func]]
+      null = expected[[func]]
+    }
+    else {
+      train = (sapply(observed, function(i) { i[[func]]}))
+      null =  (sapply(expected, function(i) { i[[func]]}))
+    }
+    #if (func == "K") {
+    #  r_vals = seq(0, maxKr, length.out = nKr)
+    #}
+    #else {
+    #  r_vals = seq(0, maxGr, length.out = nGr)
+    #}
+    # compute row means.  Potentially use median??
+    mu_null = rowMeans(null)
+    med_null = apply(null, 1, median)
+
+    # compute test statistic: how much each null and each train set deviate from the null mean (area under curve)
+    T_null = apply(null, 2, integrated_sq_dev, mu = mu_null, r = r_vals)
+    T_train = apply(train, 2, integrated_sq_dev, mu = mu_null, r = r_vals)
+
+    ## define threshold from null distribution
+    threshold = quantile(T_null, thresh_val)
+
+    ##
+    sum(T_train > threshold) / (n_relabs)
+  })
+}
+
+
+#' Gett power value for two lists of lists of curves
+#' @param expected list of curves
+#' @param observed list of curves
+#' @param thresh_val threshold, or `1-significance level` of test
+#' @param funcs vector of summary functions
+#' @param r_values radius values corresponding to each observed and expected matrix
+#' @param n_relabs number of relabelings
+get_power_val_deprecated = function(expected, observed, thresh_val = .95, funcs = c("G", "K"), r_vals, n_relabs) {
   sapply(funcs, function(func) {
     train = observed[[func]]
     null = expected[[func]]
